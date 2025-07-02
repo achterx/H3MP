@@ -657,6 +657,7 @@ namespace H3MP.Networking
             Write(config.RegistersPassiveThreats);
             Write(config.CanBeKnockedOut);
             Write(config.MaxUnconsciousTime);
+            Write(config.IgnoresNeedForWeapons);
             Write(config.AssaultPointOverridesSkirmishPointWhenFurtherThan);
             Write(config.ViewDistance);
             Write(config.HearingDistance);
@@ -1186,6 +1187,7 @@ namespace H3MP.Networking
             config.RegistersPassiveThreats = ReadBool();
             config.CanBeKnockedOut = ReadBool();
             config.MaxUnconsciousTime = ReadFloat();
+            config.IgnoresNeedForWeapons = ReadBool();
             config.AssaultPointOverridesSkirmishPointWhenFurtherThan = ReadFloat();
             config.ViewDistance = ReadFloat();
             config.HearingDistance = ReadFloat();
