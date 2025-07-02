@@ -1,5 +1,4 @@
-﻿using FFmpeg.AutoGen;
-using FistVR;
+﻿using FistVR;
 using H3MP.Networking;
 using H3MP.Scripts;
 using H3MP.Tracking;
@@ -11,7 +10,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace H3MP.Patches
 {
@@ -5735,7 +5733,7 @@ namespace H3MP.Patches
         // My solution is hijacking a variable of the PinnedGrenade, in this case its SpawnOnSplode list, to somehow reference the trackedItem
         // To do this, when we track a PinnedGrenade, I add a new GameObject to the SpawnOnSplode list
         // This GameObject has its name set to an index
-        // This index is the index of the tracked item in the trackedItemReferences static array if TrackedItem
+        // This index is the index of the tracked item in the trackedItemReferences static array of TrackedItem
         // So to know if our PinnedGrenade is under our control, we get the last gameObject in the SpawnOnSplode list
         // We get its name, which we then use to get our TrackedItem
         // We can then check trackedItem.Controller
