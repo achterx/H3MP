@@ -260,8 +260,37 @@ namespace H3MP.Patches
                 TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnHoldEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance);
                 TNH_HoldPointPatchSpawnTurretsOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTurrets", BindingFlags.NonPublic | BindingFlags.Instance);
             }
-            MethodInfo TNH_HoldPointPatchSystemNodeOriginal = typeof(TNH_HoldPoint).GetMethod("ConfigureAsSystemNode", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_HoldPointPatchSystemNodePrefix = typeof(TNH_HoldPointPatch).GetMethod("ConfigureAsSystemNodePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+          // ConfigureAsSystemNode was renamed to SpawnSystemNode in H3VR 120
+try
+{
+    Type holdPointType = typeof(TNH_HoldPoint);
+    MethodInfo TNH_HoldPointPatchSystemNodeOriginal = holdPointType.GetMethod("SpawnSystemNode", BindingFlags.Public | BindingFlags.Instance);
+    
+    if (TNH_HoldPointPatchSystemNodeOriginal == null)
+    {
+        // Try old name for backwards compatibility
+        TNH_HoldPointPatchSystemNodeOriginal = holdPointType.GetMethod("ConfigureAsSystemNode", BindingFlags.Public | BindingFlags.Instance);
+    }
+    
+    if (TNH_HoldPointPatchSystemNodeOriginal != null)
+    {
+        MethodInfo TNH_HoldPointPatchSystemNodePrefix = typeof(TNH_HoldPointPatch).GetMethod("ConfigureAsSystemNodePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+        
+        if (TNH_HoldPointPatchSystemNodePrefix != null)
+        {
+            PatchController.Verify(TNH_HoldPointPatchSystemNodeOriginal, harmony, false);
+            harmony.Patch(TNH_HoldPointPatchSystemNodeOriginal, new HarmonyMethod(TNH_HoldPointPatchSystemNodePrefix));
+        }
+    }
+    else
+    {
+        Mod.LogWarning("ConfigureAsSystemNode/SpawnSystemNode not found - skipping patch");
+    }
+}
+catch (Exception ex)
+{
+    Mod.LogError("Exception caught applying TNH_HoldPointPatch.ConfigureAsSystemNode: " + ex.Message);
+}
             MethodInfo TNH_HoldPointPatchSpawnEntitiesOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeChallengeEntities", BindingFlags.NonPublic | BindingFlags.Instance);
             MethodInfo TNH_HoldPointPatchSpawnEntitiesPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTakeChallengeEntitiesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo TNH_HoldPointPatchBeginHoldOriginal = typeof(TNH_HoldPoint).GetMethod("BeginHoldChallenge", BindingFlags.Public | BindingFlags.Instance);
@@ -1286,8 +1315,12 @@ catch (Exception ex)
                         Mod.currentTNHInstance.manager.TAHReticle.DeRegisterTrackedType(TAH_ReticleContact.ContactType.Supply);
                         Mod.currentTNHInstance.manager.m_curHoldPoint = Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex];
                         TNH_Progression.Level curLevel = Mod.currentTNHInstance.manager.m_curLevel;
-                        Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].ConfigureAsSystemNode(curLevel.TakeChallenge, curLevel.HoldChallenge, curLevel.NumOverrideTokensForHold);
-                        Mod.currentTNHInstance.manager.TAHReticle.RegisterTrackedObject(Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].SpawnPoint_SystemNode, TAH_ReticleContact.ContactType.Hold);
+TNH_HoldPointPatch.SafeConfigureSystemNode(
+    Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex],
+    curLevel.TakeChallenge,
+    curLevel.HoldChallenge,
+    curLevel.NumOverrideTokensForHold
+);                        Mod.currentTNHInstance.manager.TAHReticle.RegisterTrackedObject(Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].SpawnPoint_SystemNode, TAH_ReticleContact.ContactType.Hold);
                         bool spawnToken = true;
                         Mod.currentTNHInstance.manager.m_activeSupplyPointIndicies = Mod.currentTNHInstance.activeSupplyPointIndices;
 
@@ -1792,8 +1825,12 @@ catch (Exception ex)
                 Mod.LogInfo("\tHold " + Mod.currentTNHInstance.curHoldIndex + " ongoing", false);
                 // Set the hold
                 TNH_Progression.Level curLevel = Mod.currentTNHInstance.manager.m_curLevel;
-                Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].ConfigureAsSystemNode(curLevel.TakeChallenge, curLevel.HoldChallenge, curLevel.NumOverrideTokensForHold);
-                ++TNH_HoldPointPatch.beginHoldSendSkip;
+TNH_HoldPointPatch.SafeConfigureSystemNode(
+    Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex],
+    curLevel.TakeChallenge,
+    curLevel.HoldChallenge,
+    curLevel.NumOverrideTokensForHold
+);                ++TNH_HoldPointPatch.beginHoldSendSkip;
                 Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].m_systemNode.m_hasActivated = true;
                 Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].m_systemNode.m_hasInitiatedHold = true;
                 Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].BeginHoldChallenge();
@@ -1847,8 +1884,12 @@ catch (Exception ex)
                 Mod.LogInfo("\tNo hold ongoing", false);
                 // Set the hold
                 TNH_Progression.Level curLevel = Mod.currentTNHInstance.manager.m_curLevel;
-                Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].ConfigureAsSystemNode(curLevel.TakeChallenge, curLevel.HoldChallenge, curLevel.NumOverrideTokensForHold);
-
+TNH_HoldPointPatch.SafeConfigureSystemNode(
+    Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex],
+    curLevel.TakeChallenge,
+    curLevel.HoldChallenge,
+    curLevel.NumOverrideTokensForHold
+);
                 Mod.currentTNHInstance.manager.TAHReticle.RegisterTrackedObject(Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].SpawnPoint_SystemNode, TAH_ReticleContact.ContactType.Hold);
 
                 object level = null;
@@ -2142,7 +2183,35 @@ catch (Exception ex)
         public static bool spawnEntitiesSkip;
         public static int beginHoldSendSkip;
         public static int beginPhaseSkip;
-
+// Helper method to configure system node (H3VR 120 compatibility)
+private static void SafeConfigureSystemNode(TNH_HoldPoint holdPoint, TNH_Progression.TakeChallenge takeChallenge, TNH_Progression.HoldChallenge holdChallenge, int numOverrideTokens)
+{
+    try
+    {
+        // Try new method first (H3VR 120+)
+        MethodInfo spawnMethod = typeof(TNH_HoldPoint).GetMethod("SpawnSystemNode", BindingFlags.Public | BindingFlags.Instance);
+        if (spawnMethod != null)
+        {
+            // SpawnSystemNode doesn't take parameters - it uses the hold point's configured values
+            spawnMethod.Invoke(holdPoint, null);
+            return;
+        }
+        
+        // Fall back to old method (pre-120)
+        MethodInfo configureMethod = typeof(TNH_HoldPoint).GetMethod("ConfigureAsSystemNode", BindingFlags.Public | BindingFlags.Instance);
+        if (configureMethod != null)
+        {
+            configureMethod.Invoke(holdPoint, new object[] { takeChallenge, holdChallenge, numOverrideTokens });
+            return;
+        }
+        
+        Mod.LogError("Could not find ConfigureAsSystemNode or SpawnSystemNode method!");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("Exception calling system node configuration: " + ex.Message + "\n" + ex.StackTrace);
+    }
+}
         public static bool inSpawnEnemyGroup;
         public static bool inSpawnTurrets;
 
