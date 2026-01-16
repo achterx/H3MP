@@ -307,6 +307,7 @@ catch (Exception ex)
             MethodInfo TNH_HoldPointPatchCompletePhaseOriginal = typeof(TNH_HoldPoint).GetMethod("CompletePhase", BindingFlags.NonPublic | BindingFlags.Instance);
             MethodInfo TNH_HoldPointPatchCompletePhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("CompletePhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo TNH_HoldPointPatchUpdateOriginal = typeof(TNH_HoldPoint).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo TNH_HoldPointPatchBeginPhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("BeginPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo TNH_HoldPointPatchBeginAnalyzingOriginal = typeof(TNH_HoldPoint).GetMethod("BeginAnalyzing", BindingFlags.NonPublic | BindingFlags.Instance);
             MethodInfo TNH_HoldPointPatchBeginAnalyzingPostfix = typeof(TNH_HoldPointPatch).GetMethod("BeginAnalyzingPostfix", BindingFlags.NonPublic | BindingFlags.Static);
@@ -372,6 +373,7 @@ catch (Exception ex)
             harmony.Patch(TNH_HoldPointPatchCompletePhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchCompletePhasePrefix));
             harmony.Patch(TNH_HoldPointPatchUpdateOriginal, new HarmonyMethod(TNH_HoldPointPatchUpdatePrefix));
             harmony.Patch(TNH_HoldPointPatchBeginAnalyzingOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginAnalyzingPostfix));
+            harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePrefix), new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
             harmony.Patch(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnWarpInMarkersPrefix));
             harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix));
             harmony.Patch(TNH_HoldPointPatchIdentifyEncryptionOriginal, null, new HarmonyMethod(TNH_HoldPointPatchIdentifyEncryptionPostfix));
@@ -2187,7 +2189,103 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
         public static int beginPhaseSkip;
 
 // ===== H3VR 120 Compatibility Wrappers =====
+static bool BeginPhasePrefix(TNH_HoldPoint __instance)
+{
+    try
+    {
+        // Check if m_systemNode exists using reflection (might be null on clients)
+        FieldInfo systemNodeField = typeof(TNH_HoldPoint).GetField("m_systemNode", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (systemNodeField != null)
+        {
+            object systemNode = systemNodeField.GetValue(__instance);
+            if (systemNode == null)
+            {
+                Mod.LogInfo("BeginPhasePrefix - m_systemNode is null (likely client), skipping SetNodeMode call");
+                
+                // Do everything else from BeginPhase manually, just skip the system node part
+                SafeBeginPhaseWithoutSystemNode(__instance);
+                return false; // Skip original method
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("BeginPhasePrefix error: " + ex.Message);
+    }
+    
+    return true; // Run original method if system node exists
+}
 
+// Manual BeginPhase implementation without system node call
+static void SafeBeginPhaseWithoutSystemNode(TNH_HoldPoint __instance)
+{
+    try
+    {
+        // Reset damage
+        FieldInfo damageTakenField = typeof(TNH_HoldPoint).GetField("m_damageTakenThisHold", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (damageTakenField != null) damageTakenField.SetValue(__instance, 0f);
+        
+        // Set state to beginning
+        FieldInfo stateField = typeof(TNH_HoldPoint).GetField("m_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (stateField != null) stateField.SetValue(__instance, 0); // HoldState = 0 (beginning)
+        
+        // Set first wave flag
+        FieldInfo firstWaveField = typeof(TNH_HoldPoint).GetField("m_isFirstWave", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (firstWaveField != null) firstWaveField.SetValue(__instance, true);
+        
+        // Clear active targets
+        FieldInfo activeTargetsField = typeof(TNH_HoldPoint).GetField("m_activeTargets", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (activeTargetsField != null)
+        {
+            var targets = activeTargetsField.GetValue(__instance) as System.Collections.IList;
+            targets?.Clear();
+        }
+        
+        // Set timers
+        FieldInfo introField = typeof(TNH_HoldPoint).GetField("m_tickDownIntro", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (introField != null) introField.SetValue(__instance, 5f);
+        
+        FieldInfo transitionField = typeof(TNH_HoldPoint).GetField("m_tickDownTransition", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (transitionField != null) transitionField.SetValue(__instance, 5f);
+        
+        // Set current phase
+        FieldInfo phaseIndexField = typeof(TNH_HoldPoint).GetField("m_phaseIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo maxPhasesField = typeof(TNH_HoldPoint).GetField("m_maxPhases", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo holdChallengeField = typeof(TNH_HoldPoint).GetField("H", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo curPhaseField = typeof(TNH_HoldPoint).GetField("m_curPhase", BindingFlags.NonPublic | BindingFlags.Instance);
+        
+        if (phaseIndexField != null && holdChallengeField != null && curPhaseField != null)
+        {
+            int phaseIndex = (int)phaseIndexField.GetValue(__instance);
+            object holdChallenge = holdChallengeField.GetValue(__instance);
+            
+            PropertyInfo phasesProperty = holdChallenge.GetType().GetProperty("Phases");
+            if (phasesProperty != null)
+            {
+                var phases = phasesProperty.GetValue(holdChallenge) as System.Collections.IList;
+                if (phases != null && phaseIndex < phases.Count)
+                {
+                    curPhaseField.SetValue(__instance, phases[phaseIndex]);
+                }
+            }
+        }
+        
+        // Refresh cover (this is safe to call)
+        MethodInfo refreshCoverMethod = typeof(TNH_HoldPoint).GetMethod("RefreshCoverInHold", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (refreshCoverMethod != null)
+        {
+            refreshCoverMethod.Invoke(__instance, null);
+        }
+        
+        // NOTE: We skip the m_systemNode.SetNodeMode() call since it's null on clients
+        
+        Mod.LogInfo("SafeBeginPhaseWithoutSystemNode - Completed successfully for client");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("SafeBeginPhaseWithoutSystemNode error: " + ex.Message + "\n" + ex.StackTrace);
+    }
+}
 // Helper method to check if hold point was damaged this phase (H3VR 120 compatibility)
 public static bool SafeGetHasBeenDamagedThisPhase(TNH_HoldPoint holdPoint)
 {
