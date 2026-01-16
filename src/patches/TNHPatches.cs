@@ -1841,10 +1841,13 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
     curLevel.HoldChallenge,
     curLevel.NumOverrideTokensForHold
 );                ++TNH_HoldPointPatch.beginHoldSendSkip;
-                Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].m_systemNode.m_hasActivated = true;
-                Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].m_systemNode.m_hasInitiatedHold = true;
-                Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].BeginHoldChallenge();
-                --TNH_HoldPointPatch.beginHoldSendSkip;
+TNH_HoldPointPatch.SafeSetSystemNodeFlags(Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex], true, true);
+Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].BeginHoldChallenge();
+--TNH_HoldPointPatch.beginHoldSendSkip;
+
+// TP to system node spawn point
+Vector3 spawnPos = TNH_HoldPointPatch.SafeGetSystemNodeSpawnPoint(Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex]);
+GM.CurrentMovementManager.TeleportToPoint(spawnPos, true);
 
                 // TP to system node spawn point
                 GM.CurrentMovementManager.TeleportToPoint(Mod.currentTNHInstance.manager.HoldPoints[Mod.currentTNHInstance.curHoldIndex].SpawnPoint_SystemNode.position, true);
