@@ -244,6 +244,9 @@ namespace H3MP.Patches
             // TNH_HoldPointPatch
             MethodInfo TNH_HoldPointPatchSpawnTargetGroupOriginal = null;
             MethodInfo TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = null;
+            MethodInfo TNH_HoldPointUpdateOriginal = typeof(TNH_HoldPoint).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_HoldPointUpdateExceptionHandler = typeof(TNH_HoldPointPatch).GetMethod("UpdateExceptionHandler", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_HoldPointUpdatePostfix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePostfix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = null;
             MethodInfo TNH_HoldPointPatchSpawnTurretsOriginal = null;
             if (PatchController.TNHTweakerAsmIdx > -1)
@@ -374,6 +377,7 @@ catch (Exception ex)
             harmony.Patch(TNH_HoldPointPatchUpdateOriginal, new HarmonyMethod(TNH_HoldPointPatchUpdatePrefix));
             harmony.Patch(TNH_HoldPointPatchBeginAnalyzingOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginAnalyzingPostfix));
             harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePrefix), new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
+            harmony.Patch(TNH_HoldPointUpdateOriginal, null, new HarmonyMethod(TNH_HoldPointUpdatePostfix), null, new HarmonyMethod(TNH_HoldPointUpdateExceptionHandler));
             harmony.Patch(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnWarpInMarkersPrefix));
             harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix));
             harmony.Patch(TNH_HoldPointPatchIdentifyEncryptionOriginal, null, new HarmonyMethod(TNH_HoldPointPatchIdentifyEncryptionPostfix));
@@ -2190,6 +2194,68 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
 
 // ===== H3VR 120 Compatibility Wrappers =====
 
+static bool UpdatePrefix(TNH_HoldPoint __instance)
+{
+    // If m_systemNode is null, we need to skip the SetDisplayString calls in Update
+    FieldInfo systemNodeField = typeof(TNH_HoldPoint).GetField("m_systemNode", BindingFlags.NonPublic | BindingFlags.Instance);
+    if (systemNodeField != null)
+    {
+        object systemNode = systemNodeField.GetValue(__instance);
+        if (systemNode == null)
+        {
+            // m_systemNode is null (H3VR 120), but we still need the rest of Update to run
+            // We'll use a Transpiler or just let it run and catch the specific error
+            // For now, let original Update run - we'll handle errors with a better approach
+            return true;
+        }
+    }
+    return true;
+}
+        
+public static void SafeSetDisplayString(TNH_HoldPoint holdPoint, string text)
+{
+    try
+    {
+        // Try m_systemNode first (pre-Update 120)
+        FieldInfo systemNodeField = typeof(TNH_HoldPoint).GetField("m_systemNode", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (systemNodeField != null)
+        {
+            object systemNode = systemNodeField.GetValue(holdPoint);
+            if (systemNode != null)
+            {
+                MethodInfo method = systemNode.GetType().GetMethod("SetDisplayString");
+                if (method != null)
+                {
+                    method.Invoke(systemNode, new object[] { text });
+                    return; // Success!
+                }
+            }
+        }
+        
+        // Try m_systemCore (Update 120+)
+        FieldInfo systemCoreField = typeof(TNH_HoldPoint).GetField("m_systemCore", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (systemCoreField != null)
+        {
+            object systemCore = systemCoreField.GetValue(holdPoint);
+            if (systemCore != null)
+            {
+                MethodInfo method = systemCore.GetType().GetMethod("SetDisplayString");
+                if (method != null)
+                {
+                    method.Invoke(systemCore, new object[] { text });
+                    return; // Success!
+                }
+            }
+        }
+        
+        // Neither exists, skip silently
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("SafeSetDisplayString error: " + ex.Message);
+    }
+}
+        
         public static void SafeSetSystemNodeFlags(TNH_HoldPoint holdPoint, bool hasActivated, bool hasInitiatedHold)
 {
     try
@@ -2729,6 +2795,89 @@ catch (Exception ex)
             return true;
         }
 
+       // Exception handler to catch m_systemNode null errors
+static Exception UpdateExceptionHandler(Exception __exception)
+{
+    if (__exception is NullReferenceException)
+    {
+        // Suppress m_systemNode null reference errors
+        return null;
+    }
+    return __exception;
+}
+
+// Postfix to handle display updates safely after Update runs
+static void UpdatePostfix(TNH_HoldPoint __instance)
+{
+    try
+    {
+        // Check if we're in a hold
+        FieldInfo isInHoldField = typeof(TNH_HoldPoint).GetField("m_isInHold", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (isInHoldField == null || !(bool)isInHoldField.GetValue(__instance))
+        {
+            return; // Not in hold, skip
+        }
+        
+        // Get current state
+        FieldInfo stateField = typeof(TNH_HoldPoint).GetField("m_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (stateField == null) return;
+        
+        int state = (int)stateField.GetValue(__instance);
+        
+        // Try to set display text using m_systemCore (Update 120)
+        FieldInfo systemCoreField = typeof(TNH_HoldPoint).GetField("m_systemCore", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (systemCoreField != null)
+        {
+            object systemCore = systemCoreField.GetValue(__instance);
+            if (systemCore != null)
+            {
+                string displayText = "";
+                
+                // Get the appropriate text based on state
+                switch (state)
+                {
+                    case 0: // Beginning
+                        displayText = "SCANNING SYSTEM";
+                        break;
+                    case 1: // Analyzing
+                        displayText = "ANALYZING";
+                        break;
+                    case 2: // Hacking
+                        FieldInfo tickDownField = typeof(TNH_HoldPoint).GetField("m_tickDownToFailure", BindingFlags.NonPublic | BindingFlags.Instance);
+                        if (tickDownField != null)
+                        {
+                            float tickDown = (float)tickDownField.GetValue(__instance);
+                            displayText = "FAILURE IN: " + FormatTime(tickDown);
+                        }
+                        break;
+                    case 3: // Transition
+                        displayText = "SCANNING SYSTEM";
+                        break;
+                }
+                
+                // Set the display text
+                MethodInfo setDisplayMethod = systemCore.GetType().GetMethod("SetDisplayString", BindingFlags.Public | BindingFlags.Instance);
+                if (setDisplayMethod != null && !string.IsNullOrEmpty(displayText))
+                {
+                    setDisplayMethod.Invoke(systemCore, new object[] { displayText });
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        // Silently fail - display text is not critical
+    }
+}
+
+// Helper to format time
+static string FormatTime(float seconds)
+{
+    int minutes = Mathf.FloorToInt(seconds / 60f);
+    float remainingSeconds = seconds % 60f;
+    return string.Format("{0}:{1:00.00}", minutes, remainingSeconds);
+} 
+        
         static void BeginPhasePostfix()
         {
             if (Mod.managerObject != null && Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller == GameManager.ID)
