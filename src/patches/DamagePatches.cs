@@ -351,19 +351,30 @@ namespace H3MP.Patches
 
             ++patchIndex; // 20
 
-            // BearTrapDamageablePatch
-            MethodInfo bearTrapDamageablePatchSnapOriginal = typeof(BearTrapInteractiblePiece).GetMethod("SnapShut", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo bearTrapDamageablePatchSnapTranspiler = typeof(BearTrapDamageablePatch).GetMethod("SnapTranspiler", BindingFlags.NonPublic | BindingFlags.Static);
+   // BearTrapDamageablePatch
+try
+{
+    Type bearTrapType = Type.GetType("FistVR.BearTrapInteractiblePiece, Assembly-CSharp");
+    if (bearTrapType != null)
+    {
+        MethodInfo bearTrapDamageablePatchOriginal = bearTrapType.GetMethod("Damage", BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo bearTrapDamageablePatchTranspiler = typeof(BearTrapDamageablePatch).GetMethod("Transpiler", BindingFlags.NonPublic | BindingFlags.Static);
 
-            PatchController.Verify(bearTrapDamageablePatchSnapOriginal, harmony, false);
-            try 
-            { 
-                harmony.Patch(bearTrapDamageablePatchSnapOriginal, null, null, new HarmonyMethod(bearTrapDamageablePatchSnapTranspiler));
-            }
-            catch (Exception ex)
-            {
-                Mod.LogError("Exception caught applying DamagePatches.BearTrapDamageablePatch: " + ex.Message + ":\n" + ex.StackTrace);
-            }
+        if (bearTrapDamageablePatchOriginal != null)
+        {
+            PatchController.Verify(bearTrapDamageablePatchOriginal, harmony, false);
+            harmony.Patch(bearTrapDamageablePatchOriginal, null, null, new HarmonyMethod(bearTrapDamageablePatchTranspiler));
+        }
+    }
+    else
+    {
+        Mod.LogWarning("BearTrapInteractiblePiece not found - skipping patch (H3VR 120 removed this type)");
+    }
+}
+catch (Exception ex)
+{
+    Mod.LogError("Exception caught applying DamagePatches.BearTrapDamageablePatch: " + ex.Message);
+}
 
             ++patchIndex; // 21
 
