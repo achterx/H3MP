@@ -1229,52 +1229,90 @@ namespace H3MP
             }
         }
 
-        public static void InitTNHUIManager(TNHInstance instance)
-        {
-            Mod.currentTNHUIManager.OBS_Progression.SetSelectedButton(instance.progressionTypeSetting);
-            GM.TNHOptions.ProgressionTypeSetting = (TNHSetting_ProgressionType)instance.progressionTypeSetting;
-            Mod.currentTNHUIManager.OBS_EquipmentMode.SetSelectedButton(instance.equipmentModeSetting);
-            GM.TNHOptions.EquipmentModeSetting = (TNHSetting_EquipmentMode)instance.equipmentModeSetting;
-            Mod.currentTNHUIManager.OBS_HealthMode.SetSelectedButton(instance.healthModeSetting);
-            GM.TNHOptions.HealthModeSetting = (TNHSetting_HealthMode)instance.healthModeSetting;
-            Mod.currentTNHUIManager.OBS_TargetMode.SetSelectedButton(instance.targetModeSetting);
-            GM.TNHOptions.TargetModeSetting = (TNHSetting_TargetMode)instance.targetModeSetting;
-            Mod.currentTNHUIManager.OBS_AIDifficulty.SetSelectedButton(instance.AIDifficultyModifier);
-            GM.TNHOptions.AIDifficultyModifier = (TNHModifier_AIDifficulty)instance.AIDifficultyModifier;
-            Mod.currentTNHUIManager.OBS_AIRadarMode.SetSelectedButton(instance.radarModeModifier);
-            GM.TNHOptions.RadarModeModifier = (TNHModifier_RadarMode)instance.radarModeModifier;
-            Mod.currentTNHUIManager.OBS_ItemSpawner.SetSelectedButton(instance.itemSpawnerMode);
-            GM.TNHOptions.ItemSpawnerMode = (TNH_ItemSpawnerMode)instance.itemSpawnerMode;
-            Mod.currentTNHUIManager.OBS_Backpack.SetSelectedButton(instance.backpackMode);
-            GM.TNHOptions.BackpackMode = (TNH_BackpackMode)instance.backpackMode;
-            Mod.currentTNHUIManager.OBS_HealthMult.SetSelectedButton(instance.healthMult);
-            GM.TNHOptions.HealthMult = (TNH_HealthMult)instance.healthMult;
-            Mod.currentTNHUIManager.OBS_SosiggunReloading.SetSelectedButton(instance.sosiggunShakeReloading);
-            GM.TNHOptions.SosiggunShakeReloading = (TNH_SosiggunShakeReloading)instance.sosiggunShakeReloading;
-            Mod.currentTNHUIManager.OBS_RunSeed.SetSelectedButton(instance.TNHSeed + 1);
-            GM.TNHOptions.TNHSeed = instance.TNHSeed;
+    public static void InitTNHUIManager(TNHInstance instance)
+{
+    if (Mod.currentTNHUIManager == null)
+    {
+        Mod.LogError("currentTNHUIManager is null!");
+        return;
+    }
 
-            // Find level
-            bool found = false;
-            for (int i = 0; i < Mod.currentTNHUIManager.Levels.Count; ++i)
+    Mod.currentTNHUIManager.OBS_Progression.SetSelectedButton(instance.progressionTypeSetting);
+    GM.TNHOptions.ProgressionTypeSetting = (TNHSetting_ProgressionType)instance.progressionTypeSetting;
+    Mod.currentTNHUIManager.OBS_EquipmentMode.SetSelectedButton(instance.equipmentModeSetting);
+    GM.TNHOptions.EquipmentModeSetting = (TNHSetting_EquipmentMode)instance.equipmentModeSetting;
+    Mod.currentTNHUIManager.OBS_HealthMode.SetSelectedButton(instance.healthModeSetting);
+    GM.TNHOptions.HealthModeSetting = (TNHSetting_HealthMode)instance.healthModeSetting;
+    Mod.currentTNHUIManager.OBS_TargetMode.SetSelectedButton(instance.targetModeSetting);
+    GM.TNHOptions.TargetModeSetting = (TNHSetting_TargetMode)instance.targetModeSetting;
+    Mod.currentTNHUIManager.OBS_AIDifficulty.SetSelectedButton(instance.AIDifficultyModifier);
+    GM.TNHOptions.AIDifficultyModifier = (TNHModifier_AIDifficulty)instance.AIDifficultyModifier;
+    Mod.currentTNHUIManager.OBS_AIRadarMode.SetSelectedButton(instance.radarModeModifier);
+    GM.TNHOptions.RadarModeModifier = (TNHModifier_RadarMode)instance.radarModeModifier;
+    Mod.currentTNHUIManager.OBS_ItemSpawner.SetSelectedButton(instance.itemSpawnerMode);
+    GM.TNHOptions.ItemSpawnerMode = (TNH_ItemSpawnerMode)instance.itemSpawnerMode;
+    Mod.currentTNHUIManager.OBS_Backpack.SetSelectedButton(instance.backpackMode);
+    GM.TNHOptions.BackpackMode = (TNH_BackpackMode)instance.backpackMode;
+    Mod.currentTNHUIManager.OBS_HealthMult.SetSelectedButton(instance.healthMult);
+    GM.TNHOptions.HealthMult = (TNH_HealthMult)instance.healthMult;
+    Mod.currentTNHUIManager.OBS_SosiggunReloading.SetSelectedButton(instance.sosiggunShakeReloading);
+    GM.TNHOptions.SosiggunShakeReloading = (TNH_SosiggunShakeReloading)instance.sosiggunShakeReloading;
+    Mod.currentTNHUIManager.OBS_RunSeed.SetSelectedButton(instance.TNHSeed + 1);
+    GM.TNHOptions.TNHSeed = instance.TNHSeed;
+    
+    
+    // LOG WHICH COMPONENTS ARE MISSING
+    if (Mod.currentTNHUIManager.OBS_Progression == null) Mod.LogWarning("OBS_Progression is null");
+    if (Mod.currentTNHUIManager.OBS_EquipmentMode == null) Mod.LogWarning("OBS_EquipmentMode is null");
+    if (Mod.currentTNHUIManager.OBS_HealthMode == null) Mod.LogWarning("OBS_HealthMode is null");
+    if (Mod.currentTNHUIManager.OBS_TargetMode == null) Mod.LogWarning("OBS_TargetMode is null");
+    if (Mod.currentTNHUIManager.OBS_AIDifficulty == null) Mod.LogWarning("OBS_AIDifficulty is null");
+    if (Mod.currentTNHUIManager.OBS_AIRadarMode == null) Mod.LogWarning("OBS_AIRadarMode is null");
+    if (Mod.currentTNHUIManager.OBS_ItemSpawner == null) Mod.LogWarning("OBS_ItemSpawner is null");
+    if (Mod.currentTNHUIManager.OBS_Backpack == null) Mod.LogWarning("OBS_Backpack is null");
+    if (Mod.currentTNHUIManager.OBS_HealthMult == null) Mod.LogWarning("OBS_HealthMult is null");
+    if (Mod.currentTNHUIManager.OBS_SosiggunReloading == null) Mod.LogWarning("OBS_SosiggunReloading is null");
+    if (Mod.currentTNHUIManager.OBS_RunSeed == null) Mod.LogWarning("OBS_RunSeed is null");
+    if (Mod.currentTNHSceneLoader == null) Mod.LogWarning("currentTNHSceneLoader is null");
+    
+    // Find level
+    bool found = false;
+    if (Mod.currentTNHUIManager.Levels != null)
+    {
+        for (int i = 0; i < Mod.currentTNHUIManager.Levels.Count; ++i)
+        {
+            if (Mod.currentTNHUIManager.Levels[i].LevelID.Equals(instance.levelID))
             {
-                if (Mod.currentTNHUIManager.Levels[i].LevelID.Equals(instance.levelID))
+                found = true;
+                Mod.currentTNHUIManager.m_currentLevelIndex = i;
+                Mod.currentTNHUIManager.CurLevelID = instance.levelID;
+                Mod.currentTNHUIManager.UpdateLevelSelectDisplayAndLoader();
+                Mod.currentTNHUIManager.UpdateTableBasedOnOptions();
+                
+                // NULL CHECK FOR SCENE LOADER
+                if (Mod.currentTNHSceneLoader != null)
                 {
-                    found = true;
-                    Mod.currentTNHUIManager.m_currentLevelIndex = i;
-                    Mod.currentTNHUIManager.CurLevelID = instance.levelID;
-                    Mod.currentTNHUIManager.UpdateLevelSelectDisplayAndLoader();
-                    Mod.currentTNHUIManager.UpdateTableBasedOnOptions();
                     Mod.currentTNHSceneLoader.gameObject.SetActive(true);
-                    break;
                 }
-            }
-            if (!found)
-            {
-                Mod.currentTNHSceneLoader.gameObject.SetActive(false);
-                Mod.LogError("Missing TNH level: " + instance.levelID + "! Make sure you have it installed.");
+                else
+                {
+                    Mod.LogWarning("currentTNHSceneLoader is null - skipping scene loader activation");
+                }
+                break;
             }
         }
+    }
+    
+    if (!found)
+    {
+        // NULL CHECK FOR SCENE LOADER
+        if (Mod.currentTNHSceneLoader != null)
+        {
+            Mod.currentTNHSceneLoader.gameObject.SetActive(false);
+        }
+        Mod.LogError("Missing TNH level: " + instance.levelID + "! Make sure you have it installed.");
+    }
+}
 
         private void LoadAssets()
         {
