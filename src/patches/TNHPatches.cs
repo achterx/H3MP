@@ -339,7 +339,6 @@ catch (Exception ex)
             ////MethodInfo TNH_HoldPointPatchSpawnSystemNodeOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnSystemNode", BindingFlags.NonPublic | BindingFlags.Instance);
             ////MethodInfo TNH_HoldPointPatchSpawnSystemNodePrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnSystemNodePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 
-            PatchController.Verify(TNH_HoldPointPatchSystemNodeOriginal, harmony, true);
             PatchController.Verify(TNH_HoldPointPatchSpawnEntitiesOriginal, harmony, true);
             PatchController.Verify(TNH_HoldPointPatchBeginHoldOriginal, harmony, true);
             PatchController.Verify(TNH_HoldPointPatchRaiseRandomBarriersOriginal, harmony, true);
@@ -362,8 +361,7 @@ catch (Exception ex)
             //Verify(TNH_HoldPointPatchDeleteAllActiveTargetsOriginal, harmony, true);
             //Verify(TNH_HoldPointPatchDeleteSosigsOriginal, harmony, true);
             //Verify(TNH_HoldPointPatchDeleteTurretsOriginal, harmony, true);
-            ////Verify(TNH_HoldPointPatchSpawnSystemNodeOriginal, harmony, true);
-            harmony.Patch(TNH_HoldPointPatchSystemNodeOriginal, new HarmonyMethod(TNH_HoldPointPatchSystemNodePrefix));
+            //Verify(TNH_HoldPointPatchSpawnSystemNodeOriginal, harmony, true);
             harmony.Patch(TNH_HoldPointPatchSpawnEntitiesOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnEntitiesPrefix));
             harmony.Patch(TNH_HoldPointPatchBeginHoldOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginHoldPrefix));
             harmony.Patch(TNH_HoldPointPatchRaiseRandomBarriersOriginal, new HarmonyMethod(TNH_HoldPointPatchRaiseRandomBarriersPrefix), new HarmonyMethod(TNH_HoldPointPatchRaiseRandomBarriersPostfix));
