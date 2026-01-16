@@ -1245,7 +1245,18 @@ namespace H3MP.Patches
 
                         Mod.currentTNHInstance.manager.ResetAlertedThisPhase();
                         Mod.currentTNHInstance.manager.ResetPlayerTookDamageThisPhase();
-                        Mod.currentTNHInstance.manager.ResetHasGuardBeenKilledThatWasAltered();
+                        try
+{
+    MethodInfo resetMethod = typeof(TNH_Manager).GetMethod("ResetGuardKillTimes", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+    if (resetMethod != null)
+    {
+        resetMethod.Invoke(Mod.currentTNHInstance.manager, null);
+    }
+}
+catch (Exception ex)
+{
+    Mod.LogWarning("Could not call guard reset method (H3VR 120 compatibility): " + ex.Message);
+}
 
                         object level = null;
                         if (PatchController.TNHTweakerAsmIdx > -1)
@@ -2318,7 +2329,18 @@ namespace H3MP.Patches
                         Mod.currentTNHInstance.manager.ClearGuards();
                         Mod.currentTNHInstance.manager.ResetAlertedThisPhase();
                         Mod.currentTNHInstance.manager.ResetPlayerTookDamageThisPhase();
-                        Mod.currentTNHInstance.manager.ResetHasGuardBeenKilledThatWasAltered();
+                        try
+{
+    MethodInfo resetMethod = typeof(TNH_Manager).GetMethod("ResetGuardKillTimes", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+    if (resetMethod != null)
+    {
+        resetMethod.Invoke(Mod.currentTNHInstance.manager, null);
+    }
+}
+catch (Exception ex)
+{
+    Mod.LogWarning("Could not call ResetGuardKillTimes (H3VR 120 compatibility): " + ex.Message);
+}
 
                         // DeleteAllActiveEntities
                         ___m_activeTargets.Clear();
