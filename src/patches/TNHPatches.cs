@@ -2182,7 +2182,48 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
         public static bool spawnEntitiesSkip;
         public static int beginHoldSendSkip;
         public static int beginPhaseSkip;
-// Helper method to configure system node (H3VR 120 compatibility)
+
+      // Helper method to check if guard was killed (H3VR 120 compatibility)
+public static bool SafeHasGuardBeenKilledThatWasAltered(TNH_Manager manager)
+{
+    try
+    {
+        MethodInfo method = typeof(TNH_Manager).GetMethod("HasGuardBeenKilledThatWasAltered", BindingFlags.Public | BindingFlags.Instance);
+        if (method != null)
+        {
+            return (bool)method.Invoke(manager, null);
+        }
+        
+        // Method doesn't exist in H3VR 120+ (guard system reworked)
+        // Return false = treat as "clean" (no altered guard killed)
+        return false;
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("Exception calling HasGuardBeenKilledThatWasAltered: " + ex.Message);
+        return false;
+    }
+}
+
+// Helper method to reset guard kill flag (H3VR 120 compatibility)
+public static void SafeResetHasGuardBeenKilledThatWasAltered(TNH_Manager manager)
+{
+    try
+    {
+        MethodInfo method = typeof(TNH_Manager).GetMethod("ResetHasGuardBeenKilledThatWasAltered", BindingFlags.Public | BindingFlags.Instance);
+        if (method != null)
+        {
+            method.Invoke(manager, null);
+        }
+        // If method doesn't exist (H3VR 120+), silently skip - guard system changed
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("Exception calling ResetHasGuardBeenKilledThatWasAltered: " + ex.Message);
+    }
+}  
+        
+        // Helper method to configure system node (H3VR 120 compatibility)
 public static void SafeConfigureSystemNode(TNH_HoldPoint holdPoint, object takeChallenge, object holdChallenge, int numOverrideTokens)
 {
     try
@@ -2377,7 +2418,7 @@ public static void SafeConfigureSystemNode(TNH_HoldPoint holdPoint, object takeC
                     {
                         Mod.LogInfo("\t\tSkipped, prepping", false);
                         // Score
-                        if (!Mod.currentTNHInstance.manager.HasGuardBeenKilledThatWasAltered())
+                       if (!TNH_HoldPointPatch.SafeHasGuardBeenKilledThatWasAltered(Mod.currentTNHInstance.manager))
                         {
                             Mod.currentTNHInstance.manager.IncrementScoringStat(TNH_Manager.ScoringEvent.TakeHoldPointTakenClean, 1);
                         }
