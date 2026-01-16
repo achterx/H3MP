@@ -262,26 +262,6 @@ namespace H3MP.Patches
             }
 
             // Helper method to check if hold point was damaged this phase (H3VR 120 compatibility)
-public static bool SafeGetHasBeenDamagedThisPhase(TNH_HoldPoint holdPoint)
-{
-    try
-    {
-        FieldInfo field = typeof(TNH_HoldPoint).GetField("m_hasBeenDamagedThisPhase", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (field != null)
-        {
-            bool result = (bool)field.GetValue(holdPoint);
-            Mod.LogInfo("SafeGetHasBeenDamagedThisPhase: Field exists, value = " + result);
-            return result;
-        }
-        Mod.LogInfo("SafeGetHasBeenDamagedThisPhase: Field doesn't exist (H3VR 120), returning false");
-        return false; // Assume not damaged for scoring bonus
-    }
-    catch (Exception ex)
-    {
-        Mod.LogError("Exception accessing m_hasBeenDamagedThisPhase: " + ex.Message);
-        return false;
-    }
-}
             
             // ConfigureAsSystemNode was renamed to SpawnSystemNode in H3VR 120
 try
@@ -2208,8 +2188,29 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
 
 // ===== H3VR 120 Compatibility Wrappers =====
 
+// Helper method to check if hold point was damaged this phase (H3VR 120 compatibility)
+public static bool SafeGetHasBeenDamagedThisPhase(TNH_HoldPoint holdPoint)
+{
+    try
+    {
+        FieldInfo field = typeof(TNH_HoldPoint).GetField("m_hasBeenDamagedThisPhase", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (field != null)
+        {
+            bool result = (bool)field.GetValue(holdPoint);
+            Mod.LogInfo("SafeGetHasBeenDamagedThisPhase: Field exists, value = " + result);
+            return result;
+        }
+        Mod.LogInfo("SafeGetHasBeenDamagedThisPhase: Field doesn't exist (H3VR 120), returning false");
+        return false; // Assume not damaged for scoring bonus
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("Exception accessing m_hasBeenDamagedThisPhase: " + ex.Message);
+        return false;
+    }
+}
 
-public static bool SafeHasPlayerTakenDamageThisPhase(TNH_Manager manager)
+        public static bool SafeHasPlayerTakenDamageThisPhase(TNH_Manager manager)
 {
     try
     {
