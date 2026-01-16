@@ -2183,7 +2183,27 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
         public static int beginHoldSendSkip;
         public static int beginPhaseSkip;
 
-      // Helper method to check if guard was killed (H3VR 120 compatibility)
+public static bool SafeHasPlayerAlertedSecurityThisPhase(TNH_Manager manager)
+{
+    try
+    {
+        MethodInfo method = typeof(TNH_Manager).GetMethod("HasPlayerAlertedSecurityThisPhase", BindingFlags.Public | BindingFlags.Instance);
+        if (method != null)
+        {
+            return (bool)method.Invoke(manager, null);
+        }
+        
+        // Method doesn't exist in H3VR 120+ - assume stealthy for scoring
+        return false;
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("Exception calling HasPlayerAlertedSecurityThisPhase: " + ex.Message);
+        return false;
+    }
+}
+               
+        // Helper method to check if guard was killed (H3VR 120 compatibility)
 public static bool SafeHasGuardBeenKilledThatWasAltered(TNH_Manager manager)
 {
     try
