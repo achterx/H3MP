@@ -264,7 +264,7 @@ namespace H3MP.Patches
             // Helper method to check if hold point was damaged this phase (H3VR 120 compatibility)
             
             // ConfigureAsSystemNode was renamed to SpawnSystemNode in H3VR 120
-try
+/*try
 {
     Type holdPointType = typeof(TNH_HoldPoint);
     MethodInfo TNH_HoldPointPatchSystemNodeOriginal = holdPointType.GetMethod("SpawnSystemNode", BindingFlags.Public | BindingFlags.Instance);
@@ -295,7 +295,7 @@ catch (Exception ex)
 {
     Mod.LogError("Exception caught applying TNH_HoldPointPatch.ConfigureAsSystemNode: " + ex.Message);
 }
-            
+*/            
 MethodInfo TNH_HoldPointPatchSpawnEntitiesOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeChallengeEntities", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_HoldPointPatchSpawnEntitiesPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTakeChallengeEntitiesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_HoldPointPatchBeginHoldOriginal = typeof(TNH_HoldPoint).GetMethod("BeginHoldChallenge", BindingFlags.Public | BindingFlags.Instance);
