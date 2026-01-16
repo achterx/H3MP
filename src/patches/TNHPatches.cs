@@ -2442,7 +2442,7 @@ public static void SafeConfigureSystemNode(TNH_HoldPoint holdPoint, object takeC
                         {
                             Mod.currentTNHInstance.manager.IncrementScoringStat(TNH_Manager.ScoringEvent.TakeHoldPointTakenClean, 1);
                         }
-                        if (!Mod.currentTNHInstance.manager.HasPlayerAlertedSecurityThisPhase())
+                      if (!TNH_HoldPointPatch.SafeHasPlayerAlertedSecurityThisPhase(Mod.currentTNHInstance.manager))
                         {
                             Mod.currentTNHInstance.manager.IncrementScoringStat(TNH_Manager.ScoringEvent.TakeCompleteNoAlert, 1);
                         }
