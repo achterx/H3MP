@@ -260,7 +260,30 @@ namespace H3MP.Patches
                 TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnHoldEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance);
                 TNH_HoldPointPatchSpawnTurretsOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTurrets", BindingFlags.NonPublic | BindingFlags.Instance);
             }
-// ConfigureAsSystemNode was renamed to SpawnSystemNode in H3VR 120
+
+            // Helper method to check if hold point was damaged this phase (H3VR 120 compatibility)
+public static bool SafeGetHasBeenDamagedThisPhase(TNH_HoldPoint holdPoint)
+{
+    try
+    {
+        FieldInfo field = typeof(TNH_HoldPoint).GetField("m_hasBeenDamagedThisPhase", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (field != null)
+        {
+            bool result = (bool)field.GetValue(holdPoint);
+            Mod.LogInfo("SafeGetHasBeenDamagedThisPhase: Field exists, value = " + result);
+            return result;
+        }
+        Mod.LogInfo("SafeGetHasBeenDamagedThisPhase: Field doesn't exist (H3VR 120), returning false");
+        return false; // Assume not damaged for scoring bonus
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("Exception accessing m_hasBeenDamagedThisPhase: " + ex.Message);
+        return false;
+    }
+}
+            
+            // ConfigureAsSystemNode was renamed to SpawnSystemNode in H3VR 120
 try
 {
     Type holdPointType = typeof(TNH_HoldPoint);
@@ -2714,7 +2737,7 @@ catch (Exception ex)
                     ___m_state = TNH_HoldPoint.HoldState.Transition;
                     ___m_tickDownTransition = 5f;
                     __instance.LowerAllBarriers();
-                    if (!__instance.m_hasBeenDamagedThisPhase)
+     if (!TNH_HoldPointPatch.SafeGetHasBeenDamagedThisPhase(__instance))
                     {
                         Mod.currentTNHInstance.manager.IncrementScoringStat(TNH_Manager.ScoringEvent.HoldWaveCompleteNoDamage, 1);
                     }
