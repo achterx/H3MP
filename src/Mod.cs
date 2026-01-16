@@ -495,8 +495,7 @@ namespace H3MP
                                 break;
                             case 10: // Begin TNH hold
                                 Mod.LogInfo("\tDebug: Begin TNH hold");
-                                GM.TNH_Manager.m_curHoldPoint.m_systemNode.m_hasActivated = true;
-                                GM.TNH_Manager.m_curHoldPoint.m_systemNode.m_hasInitiatedHold = true;
+                                TNH_HoldPointPatch.SafeSetSystemNodeFlags(GM.TNH_Manager.m_curHoldPoint, true, true);
                                 GM.TNH_Manager.m_curHoldPoint.BeginHoldChallenge();
                                 break;
                             case 11: // Load into TNH game (Trigger first scene loader we can find in the scene)
