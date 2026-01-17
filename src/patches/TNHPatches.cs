@@ -3116,7 +3116,7 @@ static string FormatTime(float seconds)
         static bool CompletePhasePrefix(TNH_HoldPoint __instance, List<Sosig> ___m_activeSosigs, TNH_HoldPointSystemNode ___m_systemNode, ref int ___m_phaseIndex,
                                         ref TNH_HoldPoint.HoldState ___m_state, ref float ___m_tickDownTransition)
         {
-            if (Mod.managerObject != null && Mod.currentTNHInstance != null)
+            if (Mod.currentTNHInstance != null)
             {
                 Mod.LogInfo("CompletePhasePrefix", false);
                 Mod.currentTNHInstance.holdState = TNH_HoldPoint.HoldState.Transition;
@@ -3286,7 +3286,7 @@ static string FormatTime(float seconds)
 
         static void CompleteHoldPostfix()
         {
-            if (Mod.managerObject != null && Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
+            if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
             {
                 --TNH_ManagerPatch.completeTokenSkip;
             }
