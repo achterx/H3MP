@@ -324,8 +324,9 @@ MethodInfo TNH_HoldPointPatchUpdateOriginal = typeof(TNH_HoldPoint).GetMethod("U
 Mod.LogInfo("Getting BeginPhasePrefix...");
 MethodInfo TNH_HoldPointPatchBeginPhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("BeginPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting UpdatePrefix...");
-MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-Mod.LogInfo("Getting BeginAnalyzing...");
+MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch)
+    .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+    .FirstOrDefault(m => m.Name == "UpdatePrefix" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(TNH_HoldPoint));Mod.LogInfo("Getting BeginAnalyzing...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingOriginal = typeof(TNH_HoldPoint).GetMethod("BeginAnalyzing", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 Mod.LogInfo("Getting BeginAnalyzingPostfix...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingPostfix = typeof(TNH_HoldPointPatch).GetMethod("BeginAnalyzingPostfix", BindingFlags.NonPublic | BindingFlags.Static);
