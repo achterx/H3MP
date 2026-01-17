@@ -151,10 +151,9 @@ namespace H3MP.Patches
             PatchController.Verify(TNH_ManagerPatchSetPhaseOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerPatchUpdateOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerPatchInitBeginEquipOriginal, harmony, true);
-    if (TNH_ManagerPatchSetPhaseTakeOriginal != null)
-{
-    PatchController.Verify(TNH_ManagerPatchSetPhaseTakeOriginal, harmony, true);
-}
+    Mod.LogInfo("TNH_ManagerPatchSetPhaseTakeOriginal null?: " + (TNH_ManagerPatchSetPhaseTakeOriginal == null));
+Mod.LogInfo("TNH_ManagerGeneratePatrolOriginal null?: " + (TNH_ManagerGeneratePatrolOriginal == null));
+            PatchController.Verify(TNH_ManagerPatchSetPhaseTakeOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerPatchSetPhaseHoldOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerPatchSetPhaseCompleteOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerPatchSetLevelOriginal, harmony, true);
@@ -162,10 +161,7 @@ namespace H3MP.Patches
             PatchController.Verify(TNH_ManagerPatchOnBotShotFiredOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerPatchAddFVRObjectToTrackedListOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerGenerateSentryPatrolOriginal, harmony, true);
-    if (TNH_ManagerGeneratePatrolOriginal != null)
-{
     PatchController.Verify(TNH_ManagerGeneratePatrolOriginal, harmony, true);
-}
             PatchController.Verify(TNH_ManagerDelayedInitOriginal, harmony, true);
             PatchController.Verify(TNH_ManagerObjectCleanupInHoldOriginal, harmony, false);
             harmony.Patch(TNH_ManagerPatchPlayerDiedOriginal, null, new HarmonyMethod(TNH_ManagerPatchPlayerDiedPostfix));
@@ -175,20 +171,14 @@ namespace H3MP.Patches
             harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix));
             harmony.Patch(TNH_ManagerPatchInitBeginEquipOriginal, new HarmonyMethod(TNH_ManagerPatchInitBeginEquipPrefix));
             harmony.Patch(TNH_ManagerPatchSetLevelOriginal, new HarmonyMethod(TNH_ManagerPatchSetLevelPrefix));
-            if (TNH_ManagerPatchSetPhaseTakeOriginal != null)
-{
     harmony.Patch(TNH_ManagerPatchSetPhaseTakeOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseTakePrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseTakePostfix));
-}
             harmony.Patch(TNH_ManagerPatchSetPhaseHoldOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseHoldPrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseHoldPostfix));
             harmony.Patch(TNH_ManagerPatchSetPhaseCompleteOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseCompletePrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseCompletePostfix));
             harmony.Patch(TNH_ManagerPatchOnShotFiredOriginal, new HarmonyMethod(TNH_ManagerPatchOnShotFiredPrefix));
             harmony.Patch(TNH_ManagerPatchOnBotShotFiredOriginal, new HarmonyMethod(TNH_ManagerPatchOnBotShotFiredPrefix));
             harmony.Patch(TNH_ManagerPatchAddFVRObjectToTrackedListOriginal, new HarmonyMethod(TNH_ManagerPatchAddFVRObjectToTrackedListPrefix));
             harmony.Patch(TNH_ManagerGenerateSentryPatrolOriginal, new HarmonyMethod(TNH_ManagerGenerateSentryPatrolPrefix), new HarmonyMethod(TNH_ManagerGenerateSentryPatrolPostfix));
-     if (TNH_ManagerGeneratePatrolOriginal != null)
-{
     harmony.Patch(TNH_ManagerGeneratePatrolOriginal, new HarmonyMethod(TNH_ManagerGeneratePatrolPrefix), new HarmonyMethod(TNH_ManagerGeneratePatrolPostfix));
-}
             harmony.Patch(TNH_ManagerDelayedInitOriginal, new HarmonyMethod(TNH_ManagerDelayedInitPrefix), new HarmonyMethod(TNH_ManagerDelayedInitPostfix));
             harmony.Patch(TNH_ManagerObjectCleanupInHoldOriginal, new HarmonyMethod(TNH_ManagerObjectCleanupInHoldPrefix));
 
