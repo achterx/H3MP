@@ -193,7 +193,14 @@ Mod.LogInfo("TNH_ManagerGeneratePatrolOriginal null?: " + (TNH_ManagerGeneratePa
                 MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyBoxes", BindingFlags.Public | BindingFlags.Static);
                 PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false);
                 PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false);
-                PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false);
+try
+{
+    PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false);
+}
+catch (Exception ex)
+{
+    Mod.LogError($"SpawnBoxes Verify failed: {ex.Message}\n{ex.StackTrace}");
+}
                 MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
