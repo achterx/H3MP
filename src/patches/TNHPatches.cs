@@ -268,162 +268,148 @@ Mod.LogInfo("About to verify Tick...");
 
             ++patchIndex; // 6
 
-            // TNH_HoldPointPatch
-            MethodInfo TNH_HoldPointPatchSpawnTargetGroupOriginal = null;
-            MethodInfo TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = null;
-            MethodInfo TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = null;
-            MethodInfo TNH_HoldPointPatchSpawnTurretsOriginal = null;
-            if (PatchController.TNHTweakerAsmIdx > -1)
-            {
-                TNH_HoldPointPatchSpawnTargetGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnEncryptionReplacement", BindingFlags.Public | BindingFlags.Static);
-                TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnTakeGroupReplacement", BindingFlags.Public | BindingFlags.Static);
-                TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnHoldEnemyGroup", BindingFlags.Public | BindingFlags.Static);
-                TNH_HoldPointPatchSpawnTurretsOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnTurretsReplacement", BindingFlags.Public | BindingFlags.Static);
-            }
-            else
-            {
-TNH_HoldPointPatchSpawnTargetGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTargetGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnHoldEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-TNH_HoldPointPatchSpawnTurretsOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTurrets", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);            
-            }
-        
+// TNH_HoldPointPatch
+Mod.LogInfo("=== STARTING PATCH INDEX 6: TNH_HOLDPOINT ===");
 
-            // Helper method to check if hold point was damaged this phase (H3VR 120 compatibility)
-            
-            // ConfigureAsSystemNode was renamed to SpawnSystemNode in H3VR 120
-/*try
+MethodInfo TNH_HoldPointPatchSpawnTargetGroupOriginal = null;
+MethodInfo TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = null;
+MethodInfo TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = null;
+MethodInfo TNH_HoldPointPatchSpawnTurretsOriginal = null;
+
+if (PatchController.TNHTweakerAsmIdx > -1)
 {
-    Type holdPointType = typeof(TNH_HoldPoint);
-    MethodInfo TNH_HoldPointPatchSystemNodeOriginal = holdPointType.GetMethod("SpawnSystemNode", BindingFlags.Public | BindingFlags.Instance);
-    
-    if (TNH_HoldPointPatchSystemNodeOriginal == null)
-    {
-        // Try old name for backwards compatibility
-        // ConfigureAsSystemNode has multiple overloads, get the one with 4 parameters
-TNH_HoldPointPatchSystemNodeOriginal = holdPointType.GetMethod("ConfigureAsSystemNode", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(TNH_HoldChallenge), typeof(TNH_HoldChallenge), typeof(int), typeof(int) }, null);
-    }
-    
-    if (TNH_HoldPointPatchSystemNodeOriginal != null)
-    {
-        MethodInfo TNH_HoldPointPatchSystemNodePrefix = typeof(TNH_HoldPointPatch).GetMethod("ConfigureAsSystemNodePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-        
-        if (TNH_HoldPointPatchSystemNodePrefix != null)
-        {
-            PatchController.Verify(TNH_HoldPointPatchSystemNodeOriginal, harmony, false);
-            harmony.Patch(TNH_HoldPointPatchSystemNodeOriginal, new HarmonyMethod(TNH_HoldPointPatchSystemNodePrefix));
-        }
-    }
-    else
-    {
-        Mod.LogWarning("ConfigureAsSystemNode/SpawnSystemNode not found - skipping patch");
-    }
+    Mod.LogInfo("TNHTweaker detected, using TNHTweaker methods");
+    TNH_HoldPointPatchSpawnTargetGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnEncryptionReplacement", BindingFlags.Public | BindingFlags.Static);
+    TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnTakeGroupReplacement", BindingFlags.Public | BindingFlags.Static);
+    TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnHoldEnemyGroup", BindingFlags.Public | BindingFlags.Static);
+    TNH_HoldPointPatchSpawnTurretsOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnTurretsReplacement", BindingFlags.Public | BindingFlags.Static);
 }
-catch (Exception ex)
+else
 {
-    Mod.LogError("Exception caught applying TNH_HoldPointPatch.ConfigureAsSystemNode: " + ex.Message);
+    Mod.LogInfo("No TNHTweaker, using vanilla methods");
+    Mod.LogInfo("Getting SpawnTargetGroup...");
+    TNH_HoldPointPatchSpawnTargetGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTargetGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+    Mod.LogInfo("Getting SpawnTakeEnemyGroup...");
+    TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+    Mod.LogInfo("Getting SpawnHoldEnemyGroup...");
+    TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnHoldEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+    Mod.LogInfo("Getting SpawnTurrets...");
+    TNH_HoldPointPatchSpawnTurretsOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTurrets", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 }
-*/            
+
+Mod.LogInfo("Getting SpawnTakeChallengeEntities...");
 MethodInfo TNH_HoldPointPatchSpawnEntitiesOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeChallengeEntities", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting SpawnEntitiesPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnEntitiesPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTakeChallengeEntitiesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting BeginHoldChallenge...");
 MethodInfo TNH_HoldPointPatchBeginHoldOriginal = typeof(TNH_HoldPoint).GetMethod("BeginHoldChallenge", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting BeginHoldPrefix...");
 MethodInfo TNH_HoldPointPatchBeginHoldPrefix = typeof(TNH_HoldPointPatch).GetMethod("BeginHoldPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting RaiseRandomBarriers...");
 MethodInfo TNH_HoldPointPatchRaiseRandomBarriersOriginal = typeof(TNH_HoldPoint).GetMethod("RaiseRandomBarriers", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting RaiseRandomBarriersPrefix...");
 MethodInfo TNH_HoldPointPatchRaiseRandomBarriersPrefix = typeof(TNH_HoldPointPatch).GetMethod("RaiseRandomBarriersPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting RaiseRandomBarriersPostfix...");
 MethodInfo TNH_HoldPointPatchRaiseRandomBarriersPostfix = typeof(TNH_HoldPointPatch).GetMethod("RaiseRandomBarriersPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SetCoverPointData...");
 MethodInfo TNH_HoldPointPatchRaiseSetCoverPointDataOriginal = typeof(TNH_DestructibleBarrierPoint).GetMethod("SetCoverPointData", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting BarrierSetCoverPointDataPrefix...");
 MethodInfo TNH_HoldPointPatchRaiseSetCoverPointDataPrefix = typeof(TNH_HoldPointPatch).GetMethod("BarrierSetCoverPointDataPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting CompletePhase...");
 MethodInfo TNH_HoldPointPatchCompletePhaseOriginal = typeof(TNH_HoldPoint).GetMethod("CompletePhase", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting CompletePhasePrefix...");
 MethodInfo TNH_HoldPointPatchCompletePhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("CompletePhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting Update...");
 MethodInfo TNH_HoldPointPatchUpdateOriginal = typeof(TNH_HoldPoint).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
-//MethodInfo TNH_HoldPointPatchUpdatePostfix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePostfix", BindingFlags.NonPublic | BindingFlags.Static);
-//MethodInfo TNH_HoldPointPatchUpdateExceptionHandler = typeof(TNH_HoldPointPatch).GetMethod("UpdateExceptionHandler", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting BeginPhasePrefix...");
 MethodInfo TNH_HoldPointPatchBeginPhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("BeginPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting UpdatePrefix...");
+MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting BeginAnalyzing...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingOriginal = typeof(TNH_HoldPoint).GetMethod("BeginAnalyzing", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting BeginAnalyzingPostfix...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingPostfix = typeof(TNH_HoldPointPatch).GetMethod("BeginAnalyzingPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnWarpInMarkers...");
 MethodInfo TNH_HoldPointPatchSpawnWarpInMarkersOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnWarpInMarkers", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting SpawnWarpInMarkersPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnWarpInMarkersPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnWarpInMarkersPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnTargetGroupPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnTargetGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTargetGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting IdentifyEncryption...");
 MethodInfo TNH_HoldPointPatchIdentifyEncryptionOriginal = typeof(TNH_HoldPoint).GetMethod("IdentifyEncryption", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting IdentifyEncryptionPostfix...");
 MethodInfo TNH_HoldPointPatchIdentifyEncryptionPostfix = typeof(TNH_HoldPointPatch).GetMethod("IdentifyEncryptionPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting FailOut...");
 MethodInfo TNH_HoldPointPatchFailOutOriginal = typeof(TNH_HoldPoint).GetMethod("FailOut", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting FailOutPrefix...");
 MethodInfo TNH_HoldPointPatchFailOutPrefix = typeof(TNH_HoldPointPatch).GetMethod("FailOutPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting BeginPhase...");
 MethodInfo TNH_HoldPointPatchBeginPhaseOriginal = typeof(TNH_HoldPoint).GetMethod("BeginPhase", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting BeginPhasePostfix...");
 MethodInfo TNH_HoldPointPatchBeginPhasePostfix = typeof(TNH_HoldPointPatch).GetMethod("BeginPhasePostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting ShutDownHoldPoint...");
 MethodInfo TNH_HoldPointPatchShutDownHoldPointOriginal = typeof(TNH_HoldPoint).GetMethod("ShutDownHoldPoint", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting ShutDownHoldPointPrefix...");
 MethodInfo TNH_HoldPointPatchShutDownHoldPointPrefix = typeof(TNH_HoldPointPatch).GetMethod("ShutDownHoldPointPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting CompleteHold...");
 MethodInfo TNH_HoldPointPatchCompleteHoldOriginal = typeof(TNH_HoldPoint).GetMethod("CompleteHold", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+Mod.LogInfo("Getting CompleteHoldPrefix...");
 MethodInfo TNH_HoldPointPatchCompleteHoldPrefix = typeof(TNH_HoldPointPatch).GetMethod("CompleteHoldPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting CompleteHoldPostfix...");
 MethodInfo TNH_HoldPointPatchCompleteHoldPostfix = typeof(TNH_HoldPointPatch).GetMethod("CompleteHoldPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnHoldEnemyGroupPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnEnemyGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnHoldEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnEnemyGroupPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnEnemyGroupPostfix...");
 MethodInfo TNH_HoldPointPatchSpawnEnemyGroupPostfix = typeof(TNH_HoldPointPatch).GetMethod("SpawnEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnTurretsPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnTurretsPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTurretsPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Getting SpawnTurretsPostfix...");
 MethodInfo TNH_HoldPointPatchSpawnTurretsPostfix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTurretsPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            //MethodInfo TNH_HoldPointPatchDeletionBurstOriginal = typeof(TNH_HoldPoint).GetMethod("DeletionBurst", BindingFlags.NonPublic | BindingFlags.Instance);
-            //MethodInfo TNH_HoldPointPatchDeletionBurstPrefix = typeof(TNH_HoldPointPatch).GetMethod("DeletionBurstPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            //MethodInfo TNH_HoldPointPatchDeleteAllActiveEntitiesOriginal = typeof(TNH_HoldPoint).GetMethod("DeleteAllActiveEntities", BindingFlags.Public | BindingFlags.Instance);
-            //MethodInfo TNH_HoldPointPatchDeleteAllActiveEntitiesPrefix = typeof(TNH_HoldPointPatch).GetMethod("DeleteAllActiveEntitiesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            //MethodInfo TNH_HoldPointPatchDeleteAllActiveTargetsOriginal = typeof(TNH_HoldPoint).GetMethod("DeleteAllActiveTargets", BindingFlags.NonPublic | BindingFlags.Instance);
-            //MethodInfo TNH_HoldPointPatchDeleteAllActiveTargetsPrefix = typeof(TNH_HoldPointPatch).GetMethod("DeleteAllActiveTargetsPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            //MethodInfo TNH_HoldPointPatchDeleteSosigsOriginal = typeof(TNH_HoldPoint).GetMethod("DeleteSosigs", BindingFlags.NonPublic | BindingFlags.Instance);
-            //MethodInfo TNH_HoldPointPatchDeleteSosigsPrefix = typeof(TNH_HoldPointPatch).GetMethod("DeleteSosigsPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            //MethodInfo TNH_HoldPointPatchDeleteTurretsOriginal = typeof(TNH_HoldPoint).GetMethod("DeleteTurrets", BindingFlags.NonPublic | BindingFlags.Instance);
-            //MethodInfo TNH_HoldPointPatchDeleteTurretsPrefix = typeof(TNH_HoldPointPatch).GetMethod("DeleteTurretsPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            ////MethodInfo TNH_HoldPointPatchSpawnSystemNodeOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnSystemNode", BindingFlags.NonPublic | BindingFlags.Instance);
-            ////MethodInfo TNH_HoldPointPatchSpawnSystemNodePrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnSystemNodePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 
-            PatchController.Verify(TNH_HoldPointPatchSpawnEntitiesOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchBeginHoldOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchRaiseRandomBarriersOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchRaiseSetCoverPointDataOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchCompletePhaseOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchUpdateOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchBeginAnalyzingOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, harmony, false);
-            PatchController.Verify(TNH_HoldPointPatchSpawnTargetGroupOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchIdentifyEncryptionOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchFailOutOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchBeginPhaseOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchShutDownHoldPointOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchCompleteHoldOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal, harmony, true);
-            PatchController.Verify(TNH_HoldPointPatchSpawnTurretsOriginal, harmony, true);
-            //Verify(TNH_HoldPointPatchDeletionBurstOriginal, harmony, true);
-            //Verify(TNH_HoldPointPatchDeleteAllActiveEntitiesOriginal, harmony, true);
-            //Verify(TNH_HoldPointPatchDeleteAllActiveTargetsOriginal, harmony, true);
-            //Verify(TNH_HoldPointPatchDeleteSosigsOriginal, harmony, true);
-            //Verify(TNH_HoldPointPatchDeleteTurretsOriginal, harmony, true);
-            //Verify(TNH_HoldPointPatchSpawnSystemNodeOriginal, harmony, true);
-            harmony.Patch(TNH_HoldPointPatchSpawnEntitiesOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnEntitiesPrefix));
-            harmony.Patch(TNH_HoldPointPatchBeginHoldOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginHoldPrefix));
-            harmony.Patch(TNH_HoldPointPatchRaiseRandomBarriersOriginal, new HarmonyMethod(TNH_HoldPointPatchRaiseRandomBarriersPrefix), new HarmonyMethod(TNH_HoldPointPatchRaiseRandomBarriersPostfix));
-            harmony.Patch(TNH_HoldPointPatchRaiseSetCoverPointDataOriginal, new HarmonyMethod(TNH_HoldPointPatchRaiseSetCoverPointDataPrefix));
-            harmony.Patch(TNH_HoldPointPatchCompletePhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchCompletePhasePrefix));
-    //harmony.Patch(TNH_HoldPointPatchUpdateOriginal, 
-   // prefix: new HarmonyMethod(TNH_HoldPointPatchUpdatePrefix),
-   // postfix: new HarmonyMethod(TNH_HoldPointPatchUpdatePostfix), 
-   // finalizer: new HarmonyMethod(TNH_HoldPointPatchUpdateExceptionHandler));
-         harmony.Patch(TNH_HoldPointPatchBeginAnalyzingOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginAnalyzingPostfix));
-            harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePrefix), new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
-            harmony.Patch(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnWarpInMarkersPrefix));
-            harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix));
-            harmony.Patch(TNH_HoldPointPatchIdentifyEncryptionOriginal, null, new HarmonyMethod(TNH_HoldPointPatchIdentifyEncryptionPostfix));
-            harmony.Patch(TNH_HoldPointPatchFailOutOriginal, new HarmonyMethod(TNH_HoldPointPatchFailOutPrefix));
-            harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
-            harmony.Patch(TNH_HoldPointPatchShutDownHoldPointOriginal, new HarmonyMethod(TNH_HoldPointPatchShutDownHoldPointPrefix));
-            harmony.Patch(TNH_HoldPointPatchCompleteHoldOriginal, new HarmonyMethod(TNH_HoldPointPatchCompleteHoldPrefix), new HarmonyMethod(TNH_HoldPointPatchCompleteHoldPostfix));
-            harmony.Patch(TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnEnemyGroupPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnEnemyGroupPostfix));
-            harmony.Patch(TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnEnemyGroupPostfix));
-            harmony.Patch(TNH_HoldPointPatchSpawnTurretsOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTurretsPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnTurretsPostfix));
-            //harmony.Patch(TNH_HoldPointPatchDeletionBurstOriginal, new HarmonyMethod(TNH_HoldPointPatchDeletionBurstPrefix));
-            //harmony.Patch(TNH_HoldPointPatchDeleteAllActiveEntitiesOriginal, new HarmonyMethod(TNH_HoldPointPatchDeleteAllActiveEntitiesPrefix));
-            //harmony.Patch(TNH_HoldPointPatchDeleteAllActiveTargetsOriginal, new HarmonyMethod(TNH_HoldPointPatchDeleteAllActiveTargetsPrefix));
-            //harmony.Patch(TNH_HoldPointPatchDeleteSosigsOriginal, new HarmonyMethod(TNH_HoldPointPatchDeleteSosigsPrefix));
-            //harmony.Patch(TNH_HoldPointPatchDeleteTurretsOriginal, new HarmonyMethod(TNH_HoldPointPatchDeleteTurretsPrefix));
-            ////harmony.Patch(TNH_HoldPointPatchSpawnSystemNodeOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnSystemNodePrefix));
+Mod.LogInfo("=== ALL METHOD DECLARATIONS COMPLETE ===");
+Mod.LogInfo("Starting verification...");
+
+PatchController.Verify(TNH_HoldPointPatchSpawnEntitiesOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchBeginHoldOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchRaiseRandomBarriersOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchRaiseSetCoverPointDataOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchCompletePhaseOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchUpdateOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchBeginAnalyzingOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, harmony, false);
+PatchController.Verify(TNH_HoldPointPatchSpawnTargetGroupOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchIdentifyEncryptionOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchFailOutOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchBeginPhaseOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchShutDownHoldPointOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchCompleteHoldOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal, harmony, true);
+PatchController.Verify(TNH_HoldPointPatchSpawnTurretsOriginal, harmony, true);
+
+Mod.LogInfo("Verification complete, applying patches...");
+
+harmony.Patch(TNH_HoldPointPatchSpawnEntitiesOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnEntitiesPrefix));
+harmony.Patch(TNH_HoldPointPatchBeginHoldOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginHoldPrefix));
+harmony.Patch(TNH_HoldPointPatchRaiseRandomBarriersOriginal, new HarmonyMethod(TNH_HoldPointPatchRaiseRandomBarriersPrefix), new HarmonyMethod(TNH_HoldPointPatchRaiseRandomBarriersPostfix));
+harmony.Patch(TNH_HoldPointPatchRaiseSetCoverPointDataOriginal, new HarmonyMethod(TNH_HoldPointPatchRaiseSetCoverPointDataPrefix));
+harmony.Patch(TNH_HoldPointPatchCompletePhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchCompletePhasePrefix));
+harmony.Patch(TNH_HoldPointPatchBeginAnalyzingOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginAnalyzingPostfix));
+harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePrefix), new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
+harmony.Patch(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnWarpInMarkersPrefix));
+harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix));
+harmony.Patch(TNH_HoldPointPatchIdentifyEncryptionOriginal, null, new HarmonyMethod(TNH_HoldPointPatchIdentifyEncryptionPostfix));
+harmony.Patch(TNH_HoldPointPatchFailOutOriginal, new HarmonyMethod(TNH_HoldPointPatchFailOutPrefix));
+harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
+harmony.Patch(TNH_HoldPointPatchShutDownHoldPointOriginal, new HarmonyMethod(TNH_HoldPointPatchShutDownHoldPointPrefix));
+harmony.Patch(TNH_HoldPointPatchCompleteHoldOriginal, new HarmonyMethod(TNH_HoldPointPatchCompleteHoldPrefix), new HarmonyMethod(TNH_HoldPointPatchCompleteHoldPostfix));
+harmony.Patch(TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnEnemyGroupPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnEnemyGroupPostfix));
+harmony.Patch(TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnEnemyGroupPostfix));
+harmony.Patch(TNH_HoldPointPatchSpawnTurretsOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTurretsPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnTurretsPostfix));
+
+Mod.LogInfo("=== TNH_HOLDPOINT PATCHES COMPLETE ===");
 
             ++patchIndex; // 7
 
