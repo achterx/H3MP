@@ -225,11 +225,17 @@ MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = typeof(TNH_SupplyPoint).GetMe
             ++patchIndex; // 5
 
             // TAHReticleContactPatch
-            MethodInfo TAHReticleContactPatchTickOriginal = typeof(TAH_ReticleContact).GetMethod("Tick", BindingFlags.Public | BindingFlags.Instance);
+            
+            
+            
+Mod.LogInfo("About to get TAH_ReticleContact.Tick");
+MethodInfo TAHReticleContactPatchTickOriginal = typeof(TAH_ReticleContact).GetMethod("Tick", BindingFlags.Public | BindingFlags.Instance);
+Mod.LogInfo("Got Tick, about to get SetContactType");            
             MethodInfo TAHReticleContactPatchTickTranspiler = typeof(TAHReticleContactPatch).GetMethod("TickTranspiler", BindingFlags.NonPublic | BindingFlags.Static);
-Type contactTypeEnum = typeof(TAH_ReticleContact).GetNestedType("ContactType", BindingFlags.Public | BindingFlags.NonPublic);
-MethodInfo TAHReticleContactPatchSetContactTypeOriginal = typeof(TAH_ReticleContact).GetMethod("SetContactType", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { contactTypeEnum }, null);            MethodInfo TAHReticleContactPatchSetContactTypePrefix = typeof(TAHReticleContactPatch).GetMethod("SetContactTypePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-
+MethodInfo TAHReticleContactPatchSetContactTypeOriginal = typeof(TAH_ReticleContact)
+    .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+    .FirstOrDefault(m => m.Name == "SetContactType" && m.GetParameters().Length == 1);
+            Mod.LogInfo("Got SetContactType successfully");
             PatchController.Verify(TAHReticleContactPatchTickOriginal, harmony, false);
             try
             { 
