@@ -3163,13 +3163,19 @@ static string FormatTime(float seconds)
 
         static bool SpawnTargetGroupPrefix()
         {
+            // Only allow controller to spawn encryption targets
+    if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
+    {
+        return false; // Not controller, skip spawning
+    }
+            
             // Skip if connected, have TNH instance, and we are not controller
             return Mod.managerObject == null || Mod.currentTNHInstance == null || Mod.currentTNHInstance.controller == GameManager.ID;
         }
 
         static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
         {
-            if (Mod.managerObject != null && Mod.currentTNHInstance != null)
+            if (Mod.managerObject != null)
             {
                 Mod.LogInfo("IdentifyEncryptionPostfix", false);
                 Mod.currentTNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
@@ -3296,7 +3302,19 @@ static string FormatTime(float seconds)
         {
             inSpawnEnemyGroup = true;
 
-            return !H3MPWristMenuSection.disabledHoldSosigs;
+                // Check if sosigs are disabled via menu
+    if (H3MPWristMenuSection.disabledHoldSosigs)
+    {
+        return false;
+    }
+    
+    // Only allow controller to spawn sosigs
+    if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
+    {
+        return false; // Not controller, skip spawning
+    }
+
+            return true;
         }
 
         static void SpawnEnemyGroupPrefix()
