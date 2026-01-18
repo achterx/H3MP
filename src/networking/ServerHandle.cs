@@ -3567,26 +3567,27 @@ namespace H3MP.Networking
             ServerSend.TNHHoldPointBeginAnalyzing(clientID, packet);
         }
 
-        public static void TNHHoldIdentifyEncryption(int clientID, Packet packet)
-        {
-            int instance = packet.ReadInt();
-            if(GameManager.TNHInstances.TryGetValue(instance, out TNHInstance TNHInstance))
-            {
-                // Set instance data
-                TNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
-                TNHInstance.tickDownToFailure = 120f;
+public static void TNHHoldIdentifyEncryption(int clientID, Packet packet)
+{
+    int instance = packet.ReadInt();
+    if(GameManager.TNHInstances.TryGetValue(instance, out TNHInstance TNHInstance))
+    {
+        // Set instance data
+        TNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
+        TNHInstance.tickDownToFailure = 120f;
 
-                // If this is our TNH game, actually begin analyzing
-                if (TNHInstance.manager != null && TNHInstance.manager.m_hasInit)
-                {
-                    TNH_HoldPoint curHoldPoint = GM.TNH_Manager.m_curHoldPoint;
+        // DON'T call IdentifyEncryption - controller already spawned targets!
+        // The encryption tracking system will sync the targets automatically
+        
+        // if (TNHInstance.manager != null && TNHInstance.manager.m_hasInit)
+        // {
+        //     TNH_HoldPoint curHoldPoint = GM.TNH_Manager.m_curHoldPoint;
+        //     curHoldPoint.IdentifyEncryption();
+        // }
+    }
 
-                    curHoldPoint.IdentifyEncryption();
-                }
-            }
-
-            ServerSend.TNHHoldIdentifyEncryption(clientID, instance);
-        }
+    ServerSend.TNHHoldIdentifyEncryption(clientID, instance);
+}
 
         public static void SosigPriorityIFFChart(int clientID, Packet packet)
         {
