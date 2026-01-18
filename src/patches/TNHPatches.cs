@@ -3161,47 +3161,44 @@ static string FormatTime(float seconds)
             return true;
         }
 
-        static bool SpawnTargetGroupPrefix()
-        {
-            // Only allow controller to spawn encryption targets
-   Mod.LogInfo($"SpawnTargetGroupPrefix - currentTNHInstance: {Mod.currentTNHInstance != null}, controller: {(Mod.currentTNHInstance != null ? Mod.currentTNHInstance.controller.ToString() : "N/A")}, managerObject: {Mod.managerObject != null}");
+static bool SpawnTargetGroupPrefix()
+{
+    // Only allow controller to spawn encryption targets
     if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
     {
         return false; // Not controller, skip spawning
     }
-            
-            // Skip if connected, have TNH instance, and we are not controller
-            return Mod.managerObject == null || Mod.currentTNHInstance == null || Mod.currentTNHInstance.controller == GameManager.ID;
-        }
-
-        static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
+    
+    return true; // Controller or not in TNH, allow spawning
+}
+static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
+{
+    if (Mod.currentTNHInstance != null) // FIXED: Changed from Mod.managerObject != null
+    {
+        Mod.LogInfo("IdentifyEncryptionPostfix", false);
+        Mod.currentTNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
+        
+        if (Mod.currentTNHInstance.controller == GameManager.ID)
         {
-            if (Mod.managerObject != null)
+            Mod.LogInfo("\tWe are controller, sending", false);
+            if (ThreadManager.host)
             {
-                Mod.LogInfo("IdentifyEncryptionPostfix", false);
-                Mod.currentTNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
-
-                if (Mod.currentTNHInstance.controller == GameManager.ID)
-                {
-                    Mod.LogInfo("\tWe are controller, sending", false);
-                    if (ThreadManager.host)
-                    {
-                        ServerSend.TNHHoldIdentifyEncryption(0, Mod.currentTNHInstance.instance);
-                    }
-                    else
-                    {
-                        ClientSend.TNHHoldIdentifyEncryption(Mod.currentTNHInstance.instance);
-                    }
-                }
-                else
-                {
-                    Mod.LogInfo("\tWe are not controller, deletign warp ins", false);
-                    // Delete all active warpins here because IdentifyEncryption calls SpawnTargetGroup which usually calls delete warpins
-                    // but the call will be blocked by non controllers, just do it here for convenience
-                    __instance.DeleteAllActiveWarpIns();
-                }
+                ServerSend.TNHHoldIdentifyEncryption(0, Mod.currentTNHInstance.instance);
+            }
+            else
+            {
+                ClientSend.TNHHoldIdentifyEncryption(Mod.currentTNHInstance.instance);
             }
         }
+        else
+        {
+            Mod.LogInfo("\tWe are not controller, deleting warp ins", false);
+            // Delete all active warpins here because IdentifyEncryption calls SpawnTargetGroup which usually calls delete warpins
+            // but the call will be blocked by non controllers, just do it here for convenience
+            __instance.DeleteAllActiveWarpIns();
+        }
+    }
+}
 
         static bool SpawnWarpInMarkersPrefix()
         {
