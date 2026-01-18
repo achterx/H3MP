@@ -3229,22 +3229,25 @@ public static void TNHHoldBeginChallenge(Packet packet)
             }
         }
 
-        public static void TNHHoldIdentifyEncryption(Packet packet)
-        {
-            int instance = packet.ReadInt();
-            if (GameManager.TNHInstances.TryGetValue(instance, out TNHInstance TNHInstance))
-            {
-                // Set instance data
-                TNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
-                TNHInstance.tickDownToFailure = 120f;
+public static void TNHHoldIdentifyEncryption(Packet packet)
+{
+    int instance = packet.ReadInt();
+    if (GameManager.TNHInstances.TryGetValue(instance, out TNHInstance TNHInstance))
+    {
+        // Set instance data
+        TNHInstance.holdState = TNH_HoldPoint.HoldState.Hacking;
+        TNHInstance.tickDownToFailure = 120f;
 
-                // If this is our TNH game, actually raise barriers
-                if (TNHInstance.manager != null && TNHInstance.manager.m_hasInit)
-                {
-                    Mod.currentTNHInstance.manager.m_curHoldPoint.IdentifyEncryption();
-                }
-            }
-        }
+        // DON'T call IdentifyEncryption - controller already spawned targets!
+        // The encryption tracking system will sync the targets automatically
+        
+        // If this is our TNH game, just update barriers (if needed)
+        // if (TNHInstance.manager != null && TNHInstance.manager.m_hasInit)
+        // {
+        //     Mod.currentTNHInstance.manager.m_curHoldPoint.IdentifyEncryption();
+        // }
+    }
+}
 
         public static void TNHHoldPointFailOut(Packet packet)
         {
