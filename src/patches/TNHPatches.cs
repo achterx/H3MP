@@ -1679,63 +1679,86 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
             }
         }
 
-        static bool UpdatePrefix()
+static bool UpdatePrefix(TNH_HoldPoint __instance)
+{
+    try
+    {
+        // Skip if not in multiplayer TNH
+        if (Mod.managerObject == null || Mod.currentTNHInstance == null)
         {
-            // Skip if not connected
-            if (Mod.managerObject == null)
-            {
-                return true;
-            }
-
-            if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
-            {
-                // Call updates we don't want to skip
-                // Make the call to delayed init, but the SetPhase(Take) call inside it will be blocked by the patch
-                bool hadInit = Mod.currentTNHInstance.manager.m_hasInit;
-                Mod.currentTNHInstance.manager.DelayedInit();
-                if (Mod.currentTNHInstance.manager.BGAudioMode == TNH_BGAudioMode.Default)
-                {
-                    Mod.currentTNHInstance.manager.FMODController.Tick(Time.deltaTime);
-                }
-
-                // Update TAHReticle here because we would usually do it in Update_Hold and Update_Take
-                if (Mod.currentTNHInstance.manager.RadarHand == TNH_RadarHand.Right)
-                {
-                    Mod.currentTNHInstance.manager.TAHReticle.transform.position = GM.CurrentPlayerBody.RightHand.position + GM.CurrentPlayerBody.RightHand.forward * -0.2f;
-                }
-                else
-                {
-                    Mod.currentTNHInstance.manager.TAHReticle.transform.position = GM.CurrentPlayerBody.LeftHand.position + GM.CurrentPlayerBody.LeftHand.forward * -0.2f;
-                }
-
-                Mod.currentTNHInstance.manager.VoiceUpdate();
-                Mod.currentTNHInstance.manager.FMODController.SetMasterVolume(0.25f * GM.CurrentPlayerBody.GlobalHearing);
-
-                // Test visited on the supply points
-                if(Mod.currentTNHInstance.manager.Phase == TNH_Phase.Take)
-                {
-                    for (int i = 0; i < Mod.currentTNHInstance.manager.SupplyPoints.Count; i++)
-                    {
-                        Mod.currentTNHInstance.manager.SupplyPoints[i].TestVisited();
-                    }
-                }
-
-                // Since we are not controller, our initialization will not complete fully due to lack of SetPhase
-                // So here we check if the instance is initialized (phase not startup) and if we have to and are ready to init
-                // Then init with the instance data
-                if (Mod.currentTNHInstance.initializer != -1 && Mod.currentTNHInstance.initializer != GameManager.ID &&
-                    Mod.currentTNHInstance.phase != TNH_Phase.StartUp && !hadInit &&
-                    Mod.currentTNHInstance.manager.m_hasInit && Mod.currentTNHInstance.manager.AIManager.HasInit)
-                {
-                    Mod.LogInfo("TNH_Manager update, we were waiting for init and just got it, initing with data");
-                    InitJoinTNH();
-                }
-
-                return false;
-            }
             return true;
         }
 
+        // Get m_isInHold
+        FieldInfo isInHoldField = typeof(TNH_HoldPoint).GetField("m_isInHold", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (isInHoldField == null || !(bool)isInHoldField.GetValue(__instance))
+        {
+            return true; // Not in hold, run original
+        }
+
+        // WE ARE IN A HOLD - Block vanilla Update() to prevent double spawning
+        // Only let controller handle the spawning through our patches
+        
+        // Handle timers manually for both host and client
+        FieldInfo stateField = typeof(TNH_HoldPoint).GetField("m_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (stateField == null) return false;
+        
+        int state = (int)stateField.GetValue(__instance);
+        
+        FieldInfo tickDownIDField = typeof(TNH_HoldPoint).GetField("m_tickDownToIdentification", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo tickDownFailureField = typeof(TNH_HoldPoint).GetField("m_tickDownToFailure", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo hasWarning1Field = typeof(TNH_HoldPoint).GetField("m_hasPlayedTimeWarning1", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo hasWarning2Field = typeof(TNH_HoldPoint).GetField("m_hasPlayedTimeWarning2", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo numWarningsField = typeof(TNH_HoldPoint).GetField("m_numWarnings", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // Handle timers based on state
+        switch (state)
+        {
+            case 1: // Analyzing
+                if (tickDownIDField != null)
+                {
+                    float tickDown = (float)tickDownIDField.GetValue(__instance);
+                    tickDown -= Time.deltaTime;
+                    tickDownIDField.SetValue(__instance, tickDown);
+                }
+                break;
+
+            case 2: // Hacking
+                if (tickDownFailureField != null)
+                {
+                    float tickDownFailure = (float)tickDownFailureField.GetValue(__instance);
+                    tickDownFailure -= Time.deltaTime;
+
+                    bool hasWarning1 = (bool)hasWarning1Field.GetValue(__instance);
+                    bool hasWarning2 = (bool)hasWarning2Field.GetValue(__instance);
+                    int numWarnings = (int)numWarningsField.GetValue(__instance);
+
+                    if (!hasWarning1 && tickDownFailure < 60f)
+                    {
+                        hasWarning1Field.SetValue(__instance, true);
+                        __instance.M.EnqueueLine(TNH_VoiceLineID.AI_Encryption_Reminder1);
+                    }
+                    if (!hasWarning2 && tickDownFailure < 30f)
+                    {
+                        hasWarning2Field.SetValue(__instance, true);
+                        __instance.M.EnqueueLine(TNH_VoiceLineID.AI_Encryption_Reminder2);
+                        numWarningsField.SetValue(__instance, numWarnings + 1);
+                    }
+
+                    tickDownFailureField.SetValue(__instance, tickDownFailure);
+                }
+                break;
+        }
+
+        // CRITICAL: Block the original Update() to prevent vanilla spawning
+        return false;
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("UpdatePrefix error: " + ex.Message + "\n" + ex.StackTrace);
+        return true; // If error, try running original
+    }
+}
         static bool DelayedInitPrefix(bool ___m_hasInit)
         {
             inDelayedInit = true;
