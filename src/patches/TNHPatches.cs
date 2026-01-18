@@ -3336,12 +3336,23 @@ static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
     Mod.LogInfo($"  GameManager.ID: {GameManager.ID}");
     
     inSpawnEnemyGroup = true;
-
+    
     if (H3MPWristMenuSection.disabledHoldSosigs)
     {
         Mod.LogInfo("  RESULT: Blocking spawn (sosigs disabled)");
         return false;
     }
+
+    // Only allow controller to spawn sosigs
+    if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
+    {
+        Mod.LogInfo("  RESULT: Blocking spawn (not controller)");
+        return false;
+    }
+
+    Mod.LogInfo("  RESULT: Allowing spawn");
+    return true;
+}
 
     if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
     {
