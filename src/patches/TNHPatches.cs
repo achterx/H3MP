@@ -3163,13 +3163,22 @@ static string FormatTime(float seconds)
 
 static bool SpawnTargetGroupPrefix()
 {
+    Mod.LogInfo($"=== SpawnTargetGroupPrefix Called ===");
+    Mod.LogInfo($"  currentTNHInstance: {Mod.currentTNHInstance != null}");
+    Mod.LogInfo($"  controller: {(Mod.currentTNHInstance != null ? Mod.currentTNHInstance.controller.ToString() : "N/A")}");
+    Mod.LogInfo($"  GameManager.ID: {GameManager.ID}");
+    Mod.LogInfo($"  ThreadManager.host: {ThreadManager.host}");
+    Mod.LogInfo($"  Stack trace: {Environment.StackTrace}");
+    
     // Only allow controller to spawn encryption targets
     if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
     {
-        return false; // Not controller, skip spawning
+        Mod.LogInfo("  RESULT: Blocking spawn (not controller)");
+        return false;
     }
     
-    return true; // Controller or not in TNH, allow spawning
+    Mod.LogInfo("  RESULT: Allowing spawn");
+    return true;
 }
 static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
 {
@@ -3303,24 +3312,29 @@ static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
         }
 
         static bool SpawnHoldEnemyGroupPrefix()
-        {
-            inSpawnEnemyGroup = true;
+{
+    Mod.LogInfo($"=== SpawnHoldEnemyGroupPrefix Called ===");
+    Mod.LogInfo($"  currentTNHInstance: {Mod.currentTNHInstance != null}");
+    Mod.LogInfo($"  controller: {(Mod.currentTNHInstance != null ? Mod.currentTNHInstance.controller.ToString() : "N/A")}");
+    Mod.LogInfo($"  GameManager.ID: {GameManager.ID}");
+    
+    inSpawnEnemyGroup = true;
 
-                // Check if sosigs are disabled via menu
     if (H3MPWristMenuSection.disabledHoldSosigs)
     {
+        Mod.LogInfo("  RESULT: Blocking spawn (sosigs disabled)");
         return false;
     }
-    
-    // Only allow controller to spawn sosigs
+
     if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
     {
-        return false; // Not controller, skip spawning
+        Mod.LogInfo("  RESULT: Blocking spawn (not controller)");
+        return false;
     }
 
-            return true;
-        }
-
+    Mod.LogInfo("  RESULT: Allowing spawn");
+    return true;
+}
         static void SpawnEnemyGroupPrefix()
         {
             inSpawnEnemyGroup = true;
