@@ -3328,7 +3328,7 @@ static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
             }
         }
 
-static bool SpawnHoldEnemyGroupPrefix()
+static bool TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix()
 {
     Mod.LogInfo($"=== SpawnHoldEnemyGroupPrefix Called ===");
     Mod.LogInfo($"  currentTNHInstance: {Mod.currentTNHInstance != null}");
