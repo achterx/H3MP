@@ -3236,32 +3236,38 @@ static string FormatTime(float seconds)
             }
         }
 
-        static bool ShutDownHoldPointPrefix(TNH_HoldPoint __instance, List<Sosig> ___m_activeSosigs, List<AutoMeater> ___m_activeTurrets, List<TNH_EncryptionTarget> ___m_activeTargets,
-                                            ref TNH_HoldPoint.HoldState ___m_state, ref int ___m_phaseIndex, ref int ___m_maxPhases, ref bool ___m_isInHold,
-                                            ref TNH_HoldChallenge.Phase ___m_curPhase, List<GameObject> ___m_warpInTargets)
-        {
-            if (Mod.managerObject != null && Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
-            {
-                Mod.LogInfo("ShutDownHoldPointPrefix and not controller, shutting down", false);
-                ___m_isInHold = false;
-                ___m_state = TNH_HoldPoint.HoldState.Beginning;
-                __instance.NavBlockers.SetActive(false);
-                ___m_phaseIndex = 0;
-                ___m_maxPhases = 0;
-                ___m_curPhase = null;
-                __instance.DeleteSystemNode();
-                ___m_activeTargets.Clear();
-                __instance.DeleteAllActiveWarpIns();
-                ___m_warpInTargets.Clear();
-                ___m_activeSosigs.Clear();
-                ___m_activeTurrets.Clear();
-                __instance.LowerAllBarriers();
-
-                return false;
-            }
-
-            return true;
-        }
+       static bool ShutDownHoldPointPrefix(TNH_HoldPoint __instance, List<Sosig> ___m_activeSosigs, List<AutoMeater> ___m_activeTurrets, List<TNH_EncryptionTarget> ___m_activeTargets,
+                                    ref TNH_HoldPoint.HoldState ___m_state, ref int ___m_phaseIndex, ref int ___m_maxPhases, ref bool ___m_isInHold,
+                                    ref TNH_HoldChallenge.Phase ___m_curPhase, List<GameObject> ___m_warpInTargets)
+{
+    // ALWAYS clear encryption targets first - H3VR Update 120 doesn't clear them properly
+    if (___m_activeTargets != null)
+    {
+        ___m_activeTargets.Clear();
+    }
+    
+    if (Mod.managerObject != null && Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
+    {
+        Mod.LogInfo("ShutDownHoldPointPrefix and not controller, shutting down", false);
+        ___m_isInHold = false;
+        ___m_state = TNH_HoldPoint.HoldState.Beginning;
+        __instance.NavBlockers.SetActive(false);
+        ___m_phaseIndex = 0;
+        ___m_maxPhases = 0;
+        ___m_curPhase = null;
+        __instance.DeleteSystemNode();
+        // Already cleared above - no need to clear again here
+        __instance.DeleteAllActiveWarpIns();
+        ___m_warpInTargets.Clear();
+        ___m_activeSosigs.Clear();
+        ___m_activeTurrets.Clear();
+        __instance.LowerAllBarriers();
+        
+        return false;
+    }
+    
+    return true;
+}
 
         static void CompleteHoldPrefix()
         {
