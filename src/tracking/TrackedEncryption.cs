@@ -41,6 +41,12 @@ namespace H3MP.Tracking
         {
             base.Awake();
 
+    Mod.LogInfo($"=== TrackedEncryption.Awake ===");
+    Mod.LogInfo($"  GameObject: {gameObject.name}");
+    Mod.LogInfo($"  Controller: {(data != null ? data.controller.ToString() : "null")}");
+    Mod.LogInfo($"  GameManager.ID: {GameManager.ID}");
+    Mod.LogInfo($"  Stack trace: {System.Environment.StackTrace}");
+    
             GameManager.OnInstanceJoined += OnInstanceJoined;
 
             TNH_EncryptionTarget targetScript = GetComponent<TNH_EncryptionTarget>();
