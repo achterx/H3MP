@@ -3164,6 +3164,7 @@ static string FormatTime(float seconds)
         static bool SpawnTargetGroupPrefix()
         {
             // Only allow controller to spawn encryption targets
+   Mod.LogInfo($"SpawnTargetGroupPrefix - currentTNHInstance: {Mod.currentTNHInstance != null}, controller: {(Mod.currentTNHInstance != null ? Mod.currentTNHInstance.controller.ToString() : "N/A")}, managerObject: {Mod.managerObject != null}");
     if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
     {
         return false; // Not controller, skip spawning
