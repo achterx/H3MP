@@ -360,7 +360,7 @@ MethodInfo TNH_HoldPointPatchCompleteHoldPrefix = typeof(TNH_HoldPointPatch).Get
 Mod.LogInfo("Getting CompleteHoldPostfix...");
 MethodInfo TNH_HoldPointPatchCompleteHoldPostfix = typeof(TNH_HoldPointPatch).GetMethod("CompleteHoldPostfix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting SpawnHoldEnemyGroupPrefix...");
-MethodInfo TNH_HoldPointPatchSpawnEnemyGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnHoldEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_HoldPointPatchSpawnEnemyGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting SpawnEnemyGroupPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting SpawnEnemyGroupPostfix...");
