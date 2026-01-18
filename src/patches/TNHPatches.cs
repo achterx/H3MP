@@ -336,6 +336,7 @@ Mod.LogInfo("Getting SpawnWarpInMarkersPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnWarpInMarkersPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnWarpInMarkersPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting SpawnTargetGroupPrefix...");
 MethodInfo TNH_HoldPointPatchSpawnTargetGroupPrefix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTargetGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+            MethodInfo TNH_HoldPointPatchSpawnTargetGroupPostfix = typeof(TNH_HoldPointPatch).GetMethod("SpawnTargetGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting IdentifyEncryption...");
 MethodInfo TNH_HoldPointPatchIdentifyEncryptionOriginal = typeof(TNH_HoldPoint).GetMethod("IdentifyEncryption", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 Mod.LogInfo("Getting IdentifyEncryptionPostfix...");
@@ -421,7 +422,7 @@ harmony.Patch(TNH_HoldPointPatchCompletePhaseOriginal, new HarmonyMethod(TNH_Hol
 harmony.Patch(TNH_HoldPointPatchBeginAnalyzingOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginAnalyzingPostfix));
 harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePrefix), new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
 harmony.Patch(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnWarpInMarkersPrefix));
-harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix));
+harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPostfix));
 harmony.Patch(TNH_HoldPointPatchIdentifyEncryptionOriginal, null, new HarmonyMethod(TNH_HoldPointPatchIdentifyEncryptionPostfix));
 harmony.Patch(TNH_HoldPointPatchFailOutOriginal, new HarmonyMethod(TNH_HoldPointPatchFailOutPrefix));
 harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
@@ -2315,7 +2316,23 @@ static bool UpdatePrefix(TNH_HoldPoint __instance)
         return true; // If error, try running original
     }
 }
-        
+
+static void SpawnTargetGroupPostfix(TNH_HoldPoint __instance, List<TNH_EncryptionTarget> ___m_activeTargets)
+{
+    Mod.LogInfo($"=== SpawnTargetGroupPostfix ===");
+    Mod.LogInfo($"  Active targets count: {___m_activeTargets?.Count ?? -1}");
+    Mod.LogInfo($"  Controller: {(Mod.currentTNHInstance != null ? Mod.currentTNHInstance.controller.ToString() : "N/A")}");
+    Mod.LogInfo($"  GameManager.ID: {GameManager.ID}");
+    
+    if (___m_activeTargets != null)
+    {
+        for (int i = 0; i < ___m_activeTargets.Count; i++)
+        {
+            Mod.LogInfo($"    Target {i}: {___m_activeTargets[i]?.gameObject.name ?? "null"}");
+        }
+    }
+}
+
 public static void SafeSetDisplayString(TNH_HoldPoint holdPoint, string text)
 {
     try
