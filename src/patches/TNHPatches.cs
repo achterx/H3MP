@@ -3328,7 +3328,7 @@ static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
             }
         }
 
-        static bool SpawnHoldEnemyGroupPrefix()
+static bool SpawnHoldEnemyGroupPrefix()
 {
     Mod.LogInfo($"=== SpawnHoldEnemyGroupPrefix Called ===");
     Mod.LogInfo($"  currentTNHInstance: {Mod.currentTNHInstance != null}");
@@ -3344,16 +3344,6 @@ static void IdentifyEncryptionPostfix(TNH_HoldPoint __instance)
     }
 
     // Only allow controller to spawn sosigs
-    if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
-    {
-        Mod.LogInfo("  RESULT: Blocking spawn (not controller)");
-        return false;
-    }
-
-    Mod.LogInfo("  RESULT: Allowing spawn");
-    return true;
-}
-
     if (Mod.currentTNHInstance != null && Mod.currentTNHInstance.controller != GameManager.ID)
     {
         Mod.LogInfo("  RESULT: Blocking spawn (not controller)");
