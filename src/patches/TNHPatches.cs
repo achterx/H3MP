@@ -4072,6 +4072,7 @@ static bool SpawnEnemyGroupPrefix()
                 }
             }
     }
+    }
 
     // Patches SceneLoader.LoadMG to know when we want to start loading into a TNH game
     class SceneLoaderPatch
