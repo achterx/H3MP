@@ -2346,13 +2346,15 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
             inGeneratePatrol = false;
         }
 
-        static void SpawnEnemySosigPrefix()
-        {
-            if (Mod.managerObject != null)
-            {
-                Mod.LogWarning("Manager spawned enemy sosig: " + Environment.StackTrace);
-            }
-        }
+  static bool SpawnEnemySosigPrefix()
+{
+    if (Mod.currentTNHInstance != null && !ThreadManager.host)
+    {
+        return false; // Client: skip sosig spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
 
         // Patches ObjectCleanupInHold to prevent destruction of objects we do not control
         static bool ObjectCleanupInHoldPrefix(TNH_Manager __instance)
@@ -3551,10 +3553,9 @@ static bool SpawnEnemyGroupPrefix()
 {
     inSpawnEnemyGroup = true;
     
-    // Only host controls TNH spawning
-    if (Mod.managerObject != null && !ThreadManager.host)
+    if (Mod.currentTNHInstance != null && !ThreadManager.host)
     {
-        return false; // Client: skip spawning
+        return false; // Client: skip sosig spawning
     }
     
     return true; // Host/solo: spawn normally
