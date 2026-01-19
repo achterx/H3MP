@@ -143,7 +143,7 @@ Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 Mod.LogInfo("=== TNH_ManagerPatch - Starting ===");
 MethodInfo TNH_ManagerPatchSetPhaseTakeOriginal = null;
 MethodInfo TNH_ManagerGeneratePatrolOriginal = null;
-if (PatchController.TNHTweakerAsmIdx > -1)
+if (false)
 {
     Mod.LogInfo("Using TNHTweaker path...");
     TNH_ManagerPatchSetPhaseTakeOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SetPhase_Take_Replacement", BindingFlags.Public | BindingFlags.Static);
