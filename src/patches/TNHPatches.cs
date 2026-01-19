@@ -1678,87 +1678,7 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
                 }
             }
         }
-
-static bool UpdatePrefix(TNH_HoldPoint __instance)
-{
-    try
-    {
-        // Skip if not in multiplayer TNH
-        if (Mod.managerObject == null || Mod.currentTNHInstance == null)
-        {
-            return true;
-        }
-
-        // Get m_isInHold
-        FieldInfo isInHoldField = typeof(TNH_HoldPoint).GetField("m_isInHold", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (isInHoldField == null || !(bool)isInHoldField.GetValue(__instance))
-        {
-            return true; // Not in hold, run original
-        }
-
-        // WE ARE IN A HOLD - Block vanilla Update() to prevent double spawning
-        // Only let controller handle the spawning through our patches
         
-        // Handle timers manually for both host and client
-        FieldInfo stateField = typeof(TNH_HoldPoint).GetField("m_state", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (stateField == null) return false;
-        
-        int state = (int)stateField.GetValue(__instance);
-        
-        FieldInfo tickDownIDField = typeof(TNH_HoldPoint).GetField("m_tickDownToIdentification", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo tickDownFailureField = typeof(TNH_HoldPoint).GetField("m_tickDownToFailure", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo hasWarning1Field = typeof(TNH_HoldPoint).GetField("m_hasPlayedTimeWarning1", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo hasWarning2Field = typeof(TNH_HoldPoint).GetField("m_hasPlayedTimeWarning2", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo numWarningsField = typeof(TNH_HoldPoint).GetField("m_numWarnings", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        // Handle timers based on state
-        switch (state)
-        {
-            case 1: // Analyzing
-                if (tickDownIDField != null)
-                {
-                    float tickDown = (float)tickDownIDField.GetValue(__instance);
-                    tickDown -= Time.deltaTime;
-                    tickDownIDField.SetValue(__instance, tickDown);
-                }
-                break;
-
-            case 2: // Hacking
-                if (tickDownFailureField != null)
-                {
-                    float tickDownFailure = (float)tickDownFailureField.GetValue(__instance);
-                    tickDownFailure -= Time.deltaTime;
-
-                    bool hasWarning1 = (bool)hasWarning1Field.GetValue(__instance);
-                    bool hasWarning2 = (bool)hasWarning2Field.GetValue(__instance);
-                    int numWarnings = (int)numWarningsField.GetValue(__instance);
-
-                    if (!hasWarning1 && tickDownFailure < 60f)
-                    {
-                        hasWarning1Field.SetValue(__instance, true);
-                        __instance.M.EnqueueLine(TNH_VoiceLineID.AI_Encryption_Reminder1);
-                    }
-                    if (!hasWarning2 && tickDownFailure < 30f)
-                    {
-                        hasWarning2Field.SetValue(__instance, true);
-                        __instance.M.EnqueueLine(TNH_VoiceLineID.AI_Encryption_Reminder2);
-                        numWarningsField.SetValue(__instance, numWarnings + 1);
-                    }
-
-                    tickDownFailureField.SetValue(__instance, tickDownFailure);
-                }
-                break;
-        }
-
-        // CRITICAL: Block the original Update() to prevent vanilla spawning
-        return false;
-    }
-    catch (Exception ex)
-    {
-        Mod.LogError("UpdatePrefix error: " + ex.Message + "\n" + ex.StackTrace);
-        return true; // If error, try running original
-    }
-}
         static bool DelayedInitPrefix(bool ___m_hasInit)
         {
             inDelayedInit = true;
@@ -2260,6 +2180,87 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
 // ===== H3VR 120 Compatibility Wrappers =====
 
 static bool UpdatePrefix(TNH_HoldPoint __instance)
+{
+    try
+    {
+        // Skip if not in multiplayer TNH
+        if (Mod.managerObject == null || Mod.currentTNHInstance == null)
+        {
+            return true;
+        }
+
+        // Get m_isInHold
+        FieldInfo isInHoldField = typeof(TNH_HoldPoint).GetField("m_isInHold", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (isInHoldField == null || !(bool)isInHoldField.GetValue(__instance))
+        {
+            return true; // Not in hold, run original
+        }
+
+        // WE ARE IN A HOLD - Block vanilla Update() to prevent double spawning
+        // Only let controller handle the spawning through our patches
+        
+        // Handle timers manually for both host and client
+        FieldInfo stateField = typeof(TNH_HoldPoint).GetField("m_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (stateField == null) return false;
+        
+        int state = (int)stateField.GetValue(__instance);
+        
+        FieldInfo tickDownIDField = typeof(TNH_HoldPoint).GetField("m_tickDownToIdentification", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo tickDownFailureField = typeof(TNH_HoldPoint).GetField("m_tickDownToFailure", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo hasWarning1Field = typeof(TNH_HoldPoint).GetField("m_hasPlayedTimeWarning1", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo hasWarning2Field = typeof(TNH_HoldPoint).GetField("m_hasPlayedTimeWarning2", BindingFlags.NonPublic | BindingFlags.Instance);
+        FieldInfo numWarningsField = typeof(TNH_HoldPoint).GetField("m_numWarnings", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // Handle timers based on state
+        switch (state)
+        {
+            case 1: // Analyzing
+                if (tickDownIDField != null)
+                {
+                    float tickDown = (float)tickDownIDField.GetValue(__instance);
+                    tickDown -= Time.deltaTime;
+                    tickDownIDField.SetValue(__instance, tickDown);
+                }
+                break;
+
+            case 2: // Hacking
+                if (tickDownFailureField != null)
+                {
+                    float tickDownFailure = (float)tickDownFailureField.GetValue(__instance);
+                    tickDownFailure -= Time.deltaTime;
+
+                    bool hasWarning1 = (bool)hasWarning1Field.GetValue(__instance);
+                    bool hasWarning2 = (bool)hasWarning2Field.GetValue(__instance);
+                    int numWarnings = (int)numWarningsField.GetValue(__instance);
+
+                    if (!hasWarning1 && tickDownFailure < 60f)
+                    {
+                        hasWarning1Field.SetValue(__instance, true);
+                        __instance.M.EnqueueLine(TNH_VoiceLineID.AI_Encryption_Reminder1);
+                    }
+                    if (!hasWarning2 && tickDownFailure < 30f)
+                    {
+                        hasWarning2Field.SetValue(__instance, true);
+                        __instance.M.EnqueueLine(TNH_VoiceLineID.AI_Encryption_Reminder2);
+                        numWarningsField.SetValue(__instance, numWarnings + 1);
+                    }
+
+                    tickDownFailureField.SetValue(__instance, tickDownFailure);
+                }
+                break;
+        }
+
+        // CRITICAL: Block the original Update() to prevent vanilla spawning
+        return false;
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError("UpdatePrefix error: " + ex.Message + "\n" + ex.StackTrace);
+        return true; // If error, try running original
+    }
+}
+
+        static bool UpdatePrefix(TNH_HoldPoint __instance)
 {
     try
     {
