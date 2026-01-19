@@ -273,7 +273,10 @@ catch (Exception ex) { Mod.LogError($"✗ ObjectCleanupInHold: {ex.Message}\n{ex
 ++patchIndex; // 4
 Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 
-            // TNHSupplyPointPatch
+++patchIndex; // 5
+Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
+
+// TNHSupplyPointPatch
 if (PatchController.TNHTweakerAsmIdx > -1)
 {
     Mod.LogInfo("=== TNHTweaker Path - Getting Methods ===");
@@ -287,66 +290,94 @@ if (PatchController.TNHTweakerAsmIdx > -1)
     Mod.LogInfo($"SpawnSupplyBoxes: {TNHSupplyPointPatchSpawnBoxesOriginal != null}");
     
     Mod.LogInfo("=== Verifying Originals ===");
-    PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false);
-    PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false);
-    try
-    {
-        PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false);
-    }
-    catch (Exception ex)
-    {
-        Mod.LogError($"SpawnBoxes Verify failed: {ex.Message}\n{ex.StackTrace}");
-    }
+    try { PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false); Mod.LogInfo("✓ SpawnSupplyGroup verified"); }
+    catch (Exception ex) { Mod.LogError($"✗ SpawnSupplyGroup verify failed: {ex.Message}"); }
+    
+    try { PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false); Mod.LogInfo("✓ SpawnSupplyTurrets verified"); }
+    catch (Exception ex) { Mod.LogError($"✗ SpawnSupplyTurrets verify failed: {ex.Message}"); }
+    
+    try { PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false); Mod.LogInfo("✓ SpawnSupplyBoxes verified"); }
+    catch (Exception ex) { Mod.LogError($"✗ SpawnSupplyBoxes verify failed: {ex.Message}"); }
     
     Mod.LogInfo("=== Getting Prefix/Postfix Methods ===");
     MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"TNHTweaker_SpawnTakeEnemyGroupPrefix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix != null}");
+    if (TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix == null) Mod.LogError("✗ TNHTweaker_SpawnTakeEnemyGroupPrefix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"TNHTweaker_SpawnTakeEnemyGroupPostfix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix != null}");
+    if (TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix == null) Mod.LogError("✗ TNHTweaker_SpawnTakeEnemyGroupPostfix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"TNHTweaker_SpawnDefensesPrefix: {TNHSupplyPointPatchSpawnDefensesPrefix != null}");
+    if (TNHSupplyPointPatchSpawnDefensesPrefix == null) Mod.LogError("✗ TNHTweaker_SpawnDefensesPrefix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnDefensesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"TNHTweaker_SpawnDefensesPostfix: {TNHSupplyPointPatchSpawnDefensesPostfix != null}");
+    if (TNHSupplyPointPatchSpawnDefensesPostfix == null) Mod.LogError("✗ TNHTweaker_SpawnDefensesPostfix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnBoxesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnBoxesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"TNHTweaker_SpawnBoxesPrefix: {TNHSupplyPointPatchSpawnBoxesPrefix != null}");
+    if (TNHSupplyPointPatchSpawnBoxesPrefix == null) Mod.LogError("✗ TNHTweaker_SpawnBoxesPrefix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnBoxesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnBoxesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"TNHTweaker_SpawnBoxesPostfix: {TNHSupplyPointPatchSpawnBoxesPostfix != null}");
+    if (TNHSupplyPointPatchSpawnBoxesPostfix == null) Mod.LogError("✗ TNHTweaker_SpawnBoxesPostfix is NULL!");
     
     Mod.LogInfo("=== Applying Patches ===");
-    Mod.LogInfo($"About to patch - Prefix null?: {TNHSupplyPointPatchSpawnBoxesPrefix == null}, Postfix null?: {TNHSupplyPointPatchSpawnBoxesPostfix == null}, Original null?: {TNHSupplyPointPatchSpawnBoxesOriginal == null}");
-    try
+    
+    // SpawnTakeEnemyGroup
+    if (TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal != null && TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix != null && TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix != null)
     {
-        harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
-        Mod.LogInfo("✓ SpawnTakeEnemyGroup patched");
+        try
+        {
+            harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
+            Mod.LogInfo("✓ SpawnTakeEnemyGroup patched");
+        }
+        catch (Exception ex)
+        {
+            Mod.LogError($"✗ SpawnTakeEnemyGroup patch failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
+    else
     {
-        Mod.LogError($"✗ SpawnTakeEnemyGroup patch failed: {ex.Message}\n{ex.StackTrace}");
+        Mod.LogWarning($"⚠ SpawnTakeEnemyGroup SKIPPED - Original: {TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal != null}, Prefix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix != null}, Postfix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix != null}");
     }
     
-    try
+    // SpawnDefenses
+    if (TNHSupplyPointPatchSpawnDefensesOriginal != null && TNHSupplyPointPatchSpawnDefensesPrefix != null && TNHSupplyPointPatchSpawnDefensesPostfix != null)
     {
-        harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
-        Mod.LogInfo("✓ SpawnDefenses patched");
+        try
+        {
+            harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
+            Mod.LogInfo("✓ SpawnDefenses patched");
+        }
+        catch (Exception ex)
+        {
+            Mod.LogError($"✗ SpawnDefenses patch failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
+    else
     {
-        Mod.LogError($"✗ SpawnDefenses patch failed: {ex.Message}\n{ex.StackTrace}");
+        Mod.LogWarning($"⚠ SpawnDefenses SKIPPED - Original: {TNHSupplyPointPatchSpawnDefensesOriginal != null}, Prefix: {TNHSupplyPointPatchSpawnDefensesPrefix != null}, Postfix: {TNHSupplyPointPatchSpawnDefensesPostfix != null}");
     }
     
-    try
+    // SpawnBoxes
+    if (TNHSupplyPointPatchSpawnBoxesOriginal != null && TNHSupplyPointPatchSpawnBoxesPrefix != null && TNHSupplyPointPatchSpawnBoxesPostfix != null)
     {
-        harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
-        Mod.LogInfo("✓ SpawnBoxes patched");
+        try
+        {
+            harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
+            Mod.LogInfo("✓ SpawnBoxes patched");
+        }
+        catch (Exception ex)
+        {
+            Mod.LogError($"✗ SpawnBoxes patch failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
+    else
     {
-        Mod.LogError($"✗ SpawnBoxes patch failed: {ex.Message}\n{ex.StackTrace}");
+        Mod.LogWarning($"⚠ SpawnBoxes SKIPPED - Original: {TNHSupplyPointPatchSpawnBoxesOriginal != null}, Prefix: {TNHSupplyPointPatchSpawnBoxesPrefix != null}, Postfix: {TNHSupplyPointPatchSpawnBoxesPostfix != null}");
     }
 }
 else
@@ -374,51 +405,82 @@ else
     Mod.LogInfo("=== Getting Prefix/Postfix Methods ===");
     MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"SpawnTakeEnemyGroupPrefix null?: {TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix == null}");
+    if (TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix == null) Mod.LogError("✗ SpawnTakeEnemyGroupPrefix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"SpawnTakeEnemyGroupPostfix null?: {TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix == null}");
+    if (TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix == null) Mod.LogError("✗ SpawnTakeEnemyGroupPostfix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"SpawnDefensesPrefix null?: {TNHSupplyPointPatchSpawnDefensesPrefix == null}");
+    if (TNHSupplyPointPatchSpawnDefensesPrefix == null) Mod.LogError("✗ SpawnDefensesPrefix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnDefensesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnDefensesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"SpawnDefensesPostfix null?: {TNHSupplyPointPatchSpawnDefensesPostfix == null}");
+    if (TNHSupplyPointPatchSpawnDefensesPostfix == null) Mod.LogError("✗ SpawnDefensesPostfix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnBoxesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnBoxesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"SpawnBoxesPrefix null?: {TNHSupplyPointPatchSpawnBoxesPrefix == null}");
+    if (TNHSupplyPointPatchSpawnBoxesPrefix == null) Mod.LogError("✗ SpawnBoxesPrefix is NULL!");
     
     MethodInfo TNHSupplyPointPatchSpawnBoxesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnBoxesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
     Mod.LogInfo($"SpawnBoxesPostfix null?: {TNHSupplyPointPatchSpawnBoxesPostfix == null}");
+    if (TNHSupplyPointPatchSpawnBoxesPostfix == null) Mod.LogError("✗ SpawnBoxesPostfix is NULL!");
     
     Mod.LogInfo("=== Applying Patches ===");
-    try
+    
+    // SpawnTakeEnemyGroup
+    if (TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal != null && TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix != null && TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix != null)
     {
-        harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
-        Mod.LogInfo("✓ SpawnTakeEnemyGroup patched");
+        try
+        {
+            harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
+            Mod.LogInfo("✓ SpawnTakeEnemyGroup patched");
+        }
+        catch (Exception ex)
+        {
+            Mod.LogError($"✗ SpawnTakeEnemyGroup patch failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
+    else
     {
-        Mod.LogError($"✗ SpawnTakeEnemyGroup patch failed: {ex.Message}\n{ex.StackTrace}");
+        Mod.LogWarning($"⚠ SpawnTakeEnemyGroup SKIPPED - Original: {TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal != null}, Prefix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix != null}, Postfix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix != null}");
     }
     
-    try
+    // SpawnDefenses
+    if (TNHSupplyPointPatchSpawnDefensesOriginal != null && TNHSupplyPointPatchSpawnDefensesPrefix != null && TNHSupplyPointPatchSpawnDefensesPostfix != null)
     {
-        harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
-        Mod.LogInfo("✓ SpawnDefenses patched");
+        try
+        {
+            harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
+            Mod.LogInfo("✓ SpawnDefenses patched");
+        }
+        catch (Exception ex)
+        {
+            Mod.LogError($"✗ SpawnDefenses patch failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
+    else
     {
-        Mod.LogError($"✗ SpawnDefenses patch failed: {ex.Message}\n{ex.StackTrace}");
+        Mod.LogWarning($"⚠ SpawnDefenses SKIPPED - Original: {TNHSupplyPointPatchSpawnDefensesOriginal != null}, Prefix: {TNHSupplyPointPatchSpawnDefensesPrefix != null}, Postfix: {TNHSupplyPointPatchSpawnDefensesPostfix != null}");
     }
     
-    try
+    // SpawnBoxes
+    if (TNHSupplyPointPatchSpawnBoxesOriginal != null && TNHSupplyPointPatchSpawnBoxesPrefix != null && TNHSupplyPointPatchSpawnBoxesPostfix != null)
     {
-        harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
-        Mod.LogInfo("✓ SpawnBoxes patched");
+        try
+        {
+            harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
+            Mod.LogInfo("✓ SpawnBoxes patched");
+        }
+        catch (Exception ex)
+        {
+            Mod.LogError($"✗ SpawnBoxes patch failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
+    else
     {
-        Mod.LogError($"✗ SpawnBoxes patch failed: {ex.Message}\n{ex.StackTrace}");
+        Mod.LogWarning($"⚠ SpawnBoxes SKIPPED - Original: {TNHSupplyPointPatchSpawnBoxesOriginal != null}, Prefix: {TNHSupplyPointPatchSpawnBoxesPrefix != null}, Postfix: {TNHSupplyPointPatchSpawnBoxesPostfix != null}");
     }
 }
 
