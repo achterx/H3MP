@@ -242,7 +242,9 @@ MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = typeof(TNH_SupplyPoint).GetMe
 Mod.LogInfo("About to get TAH_ReticleContact.Tick");
 MethodInfo TAHReticleContactPatchTickOriginal = typeof(TAH_ReticleContact).GetMethod("Tick", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(UnityEngine.Vector3) }, null);Mod.LogInfo("Got Tick, about to get SetContactType");           
             MethodInfo TAHReticleContactPatchTickTranspiler = typeof(TAHReticleContactPatch).GetMethod("TickTranspiler", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TAHReticleContactPatchSetContactTypePrefix = typeof(TAHReticleContactPatch).GetMethod("SetContactTypePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TAHReticleContactPatchSetContactTypePrefix = typeof(TAHReticleContactPatch)
+    .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
+    .FirstOrDefault(m => m.Name == "SetContactTypePrefix" && m.GetParameters().Length == 2);
             MethodInfo TAHReticleContactPatchSetContactTypeOriginal = typeof(TAH_ReticleContact)
     .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
     .FirstOrDefault(m => m.Name == "SetContactType" && m.GetParameters().Length == 1);
