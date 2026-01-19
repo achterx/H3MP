@@ -167,7 +167,7 @@ MethodInfo TNH_ManagerPatchSosigKillPrefix = typeof(TNH_ManagerPatch).GetMethod(
 MethodInfo TNH_ManagerPatchSetPhaseOriginal = typeof(TNH_Manager).GetMethod("SetPhase", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_ManagerPatchSetPhasePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchUpdateOriginal = typeof(TNH_Manager).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
-MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+//MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchInitBeginEquipOriginal = typeof(TNH_Manager).GetMethod("InitBeginningEquipment", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_ManagerPatchInitBeginEquipPrefix = typeof(TNH_ManagerPatch).GetMethod("InitBeginEquipPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchSetPhaseTakePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePrefix", BindingFlags.NonPublic | BindingFlags.Static);
@@ -231,8 +231,8 @@ catch (Exception ex) { Mod.LogError($"✗ SosigKill: {ex.Message}\n{ex.StackTrac
 try { harmony.Patch(TNH_ManagerPatchSetPhaseOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhasePrefix)); Mod.LogInfo("✓ SetPhase"); }
 catch (Exception ex) { Mod.LogError($"✗ SetPhase: {ex.Message}\n{ex.StackTrace}"); }
 
-try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
-catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
+//try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
+//catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
 
 try { harmony.Patch(TNH_ManagerPatchInitBeginEquipOriginal, new HarmonyMethod(TNH_ManagerPatchInitBeginEquipPrefix)); Mod.LogInfo("✓ InitBeginEquip"); }
 catch (Exception ex) { Mod.LogError($"✗ InitBeginEquip: {ex.Message}\n{ex.StackTrace}"); }
