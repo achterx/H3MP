@@ -224,21 +224,28 @@ namespace H3MP.Tracking
             return t.GetComponent<Sosig>() != null;
         }
 
-        public static bool IsControlled(Transform root)
+public static bool IsControlled(Transform root)
+{
+    // In TNH, only the host should track sosigs
+    // Clients receive sosigs from the host via network
+    if (Mod.currentTNHInstance != null && !ThreadManager.host)
+    {
+        return false; // Client in TNH: never track local sosigs
+    }
+    
+    Sosig sosig = root.GetComponent<Sosig>();
+    if (sosig != null && sosig.Links != null)
+    {
+        for(int i=0; i<sosig.Links.Count; ++i)
         {
-            Sosig sosig = root.GetComponent<Sosig>();
-            if (sosig != null && sosig.Links != null)
+            if(sosig.Links[i] != null && sosig.Links[i].O.m_hand != null)
             {
-                for(int i=0; i<sosig.Links.Count; ++i)
-                {
-                    if(sosig.Links[i] != null && sosig.Links[i].O.m_hand != null)
-                    {
-                        return true;
-                    }
-                }
+                return true;
             }
-            return false;
         }
+    }
+    return false;
+}
 
         public override bool IsControlled(out int interactionID)
         {
