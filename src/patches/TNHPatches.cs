@@ -481,34 +481,7 @@ catch (Exception ex)
 ++patchIndex; // 6
 Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 
-// TNH_HoldPointPatch
-Mod.LogInfo("=== STARTING PATCH INDEX 6: TNH_HOLDPOINT ===");
-
-MethodInfo TNH_HoldPointPatchSpawnTargetGroupOriginal = null;
-MethodInfo TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = null;
-MethodInfo TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = null;
-MethodInfo TNH_HoldPointPatchSpawnTurretsOriginal = null;
-
-if (PatchController.TNHTweakerAsmIdx > -1)
-{
-    Mod.LogInfo("TNHTweaker detected, using TNHTweaker methods");
-    TNH_HoldPointPatchSpawnTargetGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnEncryptionReplacement", BindingFlags.Public | BindingFlags.Static);
-    TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnTakeGroupReplacement", BindingFlags.Public | BindingFlags.Static);
-    TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnHoldEnemyGroup", BindingFlags.Public | BindingFlags.Static);
-    TNH_HoldPointPatchSpawnTurretsOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnTurretsReplacement", BindingFlags.Public | BindingFlags.Static);
-}
-else
-{
-    Mod.LogInfo("No TNHTweaker, using vanilla methods");
-    Mod.LogInfo("Getting SpawnTargetGroup...");
-    TNH_HoldPointPatchSpawnTargetGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTargetGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-    Mod.LogInfo("Getting SpawnTakeEnemyGroup...");
-    TNH_HoldPointPatchSpawnTakeEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-    Mod.LogInfo("Getting SpawnHoldEnemyGroup...");
-    TNH_HoldPointPatchSpawnHoldEnemyGroupOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnHoldEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-    Mod.LogInfo("Getting SpawnTurrets...");
-    TNH_HoldPointPatchSpawnTurretsOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTurrets", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-}
+MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnTakeEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 
 Mod.LogInfo("Getting SpawnTakeChallengeEntities...");
 MethodInfo TNH_HoldPointPatchSpawnEntitiesOriginal = typeof(TNH_HoldPoint).GetMethod("SpawnTakeChallengeEntities", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(TNH_TakeChallenge) }, null);
