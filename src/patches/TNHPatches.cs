@@ -2346,16 +2346,14 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
             inGeneratePatrol = false;
         }
 
-static bool SpawnEnemySosigPrefix()
-{
-    // Only host controls TNH spawning
-    if (Mod.managerObject != null && !ThreadManager.host)
-    {
-        return false; // Client: skip spawning
-    }
-    
-    return true; // Host/solo: spawn normally
-}
+        static void SpawnEnemySosigPrefix()
+        {
+            if (Mod.managerObject != null)
+            {
+                Mod.LogWarning("Manager spawned enemy sosig: " + Environment.StackTrace);
+            }
+        }
+
         // Patches ObjectCleanupInHold to prevent destruction of objects we do not control
         static bool ObjectCleanupInHoldPrefix(TNH_Manager __instance)
         {
@@ -2431,7 +2429,7 @@ static bool SpawnEnemySosigPrefix()
 // ===== H3VR 120 Compatibility Wrappers =====
 
 
-static bool HoldPointUpdatePrefix(TNH_HoldPoint __instance)
+static bool UpdatePrefix(TNH_HoldPoint __instance)
 {
     // Skip if not in multiplayer TNH
     if (Mod.managerObject == null || Mod.currentTNHInstance == null)
@@ -3567,18 +3565,10 @@ static bool SpawnEnemyGroupPrefix()
             inSpawnEnemyGroup = false;
         }
 
-static bool SpawnTurretsPrefix()
-{
-    inSpawnTurrets = true;
-    
-    // Only host controls TNH spawning
-    if (Mod.managerObject != null && !ThreadManager.host)
-    {
-        return false; // Client: skip spawning
-    }
-    
-    return true; // Host/solo: spawn normally
-}
+        static void SpawnTurretsPrefix()
+        {
+            inSpawnTurrets = true;
+        }
 
         static void SpawnTurretsPostfix()
         {
@@ -3635,16 +3625,13 @@ static bool SpawnTurretsPrefix()
             return Mod.currentTNHInstance == null || (Mod.currentTNHInstance.controller == GameManager.ID);
         }
 
-static bool SpawnSystemNodePrefix()
-{
-    // Only host controls TNH spawning
-    if (Mod.managerObject != null && !ThreadManager.host)
-    {
-        return false; // Client: skip spawning
-    }
-    
-    return true; // Host/solo: spawn normally
-}
+        static void SpawnSystemNodePrefix()
+        {
+            if (Mod.managerObject != null)
+            {
+                Mod.LogWarning("SpawnSystemNodePrefix called: " + Environment.StackTrace);
+            }
+        }
     }
 
     class TNH_SupplyPointPatch
@@ -4073,16 +4060,16 @@ static bool SpawnSystemNodePrefix()
     // Patches TNH_WeaponCrate.Update to know when the case is open so we can put a timed destroyer on it if necessary
     class TNHWeaponCrateSpawnObjectsPatch
     {
-static bool SpawnObjectsRawPrefix(ref TNH_WeaponCrate __instance)
-{
-    // Only host controls TNH spawning
-    if (Mod.managerObject != null && !ThreadManager.host)
-    {
-        return false; // Client: skip spawning
-    }
-    
-    return true; // Host/solo: spawn normally
-}
+        static void SpawnObjectsRawPrefix(ref TNH_WeaponCrate __instance)
+        {
+            if (Mod.managerObject != null)
+            {
+                TimerDestroyer destroyer = __instance.GetComponent<TimerDestroyer>();
+                if (destroyer != null)
+                {
+                    destroyer.triggered = true;
+                }
+            }
     }
 
     // Patches SceneLoader.LoadMG to know when we want to start loading into a TNH game
