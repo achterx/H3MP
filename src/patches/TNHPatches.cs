@@ -167,7 +167,7 @@ MethodInfo TNH_ManagerPatchSosigKillPrefix = typeof(TNH_ManagerPatch).GetMethod(
 MethodInfo TNH_ManagerPatchSetPhaseOriginal = typeof(TNH_Manager).GetMethod("SetPhase", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_ManagerPatchSetPhasePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchUpdateOriginal = typeof(TNH_Manager).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
-//MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchInitBeginEquipOriginal = typeof(TNH_Manager).GetMethod("InitBeginningEquipment", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_ManagerPatchInitBeginEquipPrefix = typeof(TNH_ManagerPatch).GetMethod("InitBeginEquipPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchSetPhaseTakePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePrefix", BindingFlags.NonPublic | BindingFlags.Static);
@@ -231,8 +231,8 @@ catch (Exception ex) { Mod.LogError($"✗ SosigKill: {ex.Message}\n{ex.StackTrac
 try { harmony.Patch(TNH_ManagerPatchSetPhaseOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhasePrefix)); Mod.LogInfo("✓ SetPhase"); }
 catch (Exception ex) { Mod.LogError($"✗ SetPhase: {ex.Message}\n{ex.StackTrace}"); }
 
-//try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
-//catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
+try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
+catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
 
 try { harmony.Patch(TNH_ManagerPatchInitBeginEquipOriginal, new HarmonyMethod(TNH_ManagerPatchInitBeginEquipPrefix)); Mod.LogInfo("✓ InitBeginEquip"); }
 catch (Exception ex) { Mod.LogError($"✗ InitBeginEquip: {ex.Message}\n{ex.StackTrace}"); }
@@ -1275,6 +1275,23 @@ Mod.LogInfo("=== TNH_HOLDPOINT PATCHES COMPLETE ===");
         public static List<Vector3> patrolPoints;
         public static int patrolIndex = -1;
 
+        private static bool UpdatePrefix(TNH_Manager __instance)
+{
+    // Only run Update on server/host
+    // Clients will receive networked Sosig data, they shouldn't spawn their own
+    if (Mod.managerObject == null)
+    {
+        return true; // Solo play, run normally
+    }
+    
+    if (!ThreadManager.host)
+    {
+        return false; // Client: skip Update to prevent double spawning
+    }
+    
+    return true; // Host/Server: run Update normally
+}
+        
         static void PlayerDiedPostfix()
         {
             // As a postfix, this will ensure the death is handled in terms of the TNHInstance
