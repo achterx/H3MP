@@ -26,164 +26,252 @@ namespace H3MP.Patches
 
             ++patchIndex; // 1
 
-            // TNH_TokenPatch
-            MethodInfo TNH_TokenPatchPatchCollectOriginal = typeof(TNH_Token).GetMethod("Collect", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_TokenPatchPatchCollectPrefix = typeof(TNH_TokenPatch).GetMethod("CollectPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_TokenPatchPatchCollectPostfix = typeof(TNH_TokenPatch).GetMethod("CollectPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+  // TNH_TokenPatch
+Mod.LogInfo("=== TNH_TokenPatch - Starting ===");
+MethodInfo TNH_TokenPatchPatchCollectOriginal = typeof(TNH_Token).GetMethod("Collect", BindingFlags.NonPublic | BindingFlags.Instance);
+Mod.LogInfo($"Collect original: {TNH_TokenPatchPatchCollectOriginal != null}");
 
-            PatchController.Verify(TNH_TokenPatchPatchCollectOriginal, harmony, true);
-            harmony.Patch(TNH_TokenPatchPatchCollectOriginal, new HarmonyMethod(TNH_TokenPatchPatchCollectPrefix), new HarmonyMethod(TNH_TokenPatchPatchCollectPostfix));
+MethodInfo TNH_TokenPatchPatchCollectPrefix = typeof(TNH_TokenPatch).GetMethod("CollectPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo($"CollectPrefix: {TNH_TokenPatchPatchCollectPrefix != null}");
 
-            ++patchIndex; // 2
+MethodInfo TNH_TokenPatchPatchCollectPostfix = typeof(TNH_TokenPatch).GetMethod("CollectPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo($"CollectPostfix: {TNH_TokenPatchPatchCollectPostfix != null}");
 
-            // TNH_UIManagerPatch
-            MethodInfo TNH_UIManagerPatchProgressionOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_Progression", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchProgressionPrefix = typeof(TNH_UIManagerPatch).GetMethod("ProgressionPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchEquipmentOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_EquipmentMode", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchEquipmentPrefix = typeof(TNH_UIManagerPatch).GetMethod("EquipmentPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchHealthModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_HealthMode", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchHealthModePrefix = typeof(TNH_UIManagerPatch).GetMethod("HealthModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchTargetModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_TargetMode", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchTargetModePrefix = typeof(TNH_UIManagerPatch).GetMethod("TargetPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchAIDifficultyOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_AIDifficulty", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchAIDifficultyPrefix = typeof(TNH_UIManagerPatch).GetMethod("AIDifficultyPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchRadarModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_AIRadarMode", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchRadarModePrefix = typeof(TNH_UIManagerPatch).GetMethod("RadarModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchItemSpawnerModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_ItemSpawner", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchItemSpawnerModePrefix = typeof(TNH_UIManagerPatch).GetMethod("ItemSpawnerModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchBackpackModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_Backpack", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchBackpackModePrefix = typeof(TNH_UIManagerPatch).GetMethod("BackpackModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchHealthMultOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_HealthMult", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchHealthMultPrefix = typeof(TNH_UIManagerPatch).GetMethod("HealthMultPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchSosigGunReloadOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_SosiggunShakeReloading", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchSosigGunReloadPrefix = typeof(TNH_UIManagerPatch).GetMethod("SosigGunReloadPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchSeedOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_RunSeed", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchSeedPrefix = typeof(TNH_UIManagerPatch).GetMethod("SeedPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchNextLevelOriginal = typeof(TNH_UIManager).GetMethod("BTN_NextLevel", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchNextLevelPrefix = typeof(TNH_UIManagerPatch).GetMethod("NextLevelPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_UIManagerPatchPrevLevelOriginal = typeof(TNH_UIManager).GetMethod("BTN_PrevLevel", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_UIManagerPatchPrevLevelPrefix = typeof(TNH_UIManagerPatch).GetMethod("PrevLevelPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+PatchController.Verify(TNH_TokenPatchPatchCollectOriginal, harmony, true);
+try
+{
+    harmony.Patch(TNH_TokenPatchPatchCollectOriginal, new HarmonyMethod(TNH_TokenPatchPatchCollectPrefix), new HarmonyMethod(TNH_TokenPatchPatchCollectPostfix));
+    Mod.LogInfo("✓ TNH_TokenPatch.Collect patched");
+}
+catch (Exception ex)
+{
+    Mod.LogError($"✗ TNH_TokenPatch.Collect failed: {ex.Message}\n{ex.StackTrace}");
+}
 
-            PatchController.Verify(TNH_UIManagerPatchProgressionOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchEquipmentOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchHealthModeOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchTargetModeOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchAIDifficultyOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchRadarModeOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchItemSpawnerModeOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchBackpackModeOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchHealthMultOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchSosigGunReloadOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchSeedOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchNextLevelOriginal, harmony, false);
-            PatchController.Verify(TNH_UIManagerPatchPrevLevelOriginal, harmony, false);
-            harmony.Patch(TNH_UIManagerPatchProgressionOriginal, new HarmonyMethod(TNH_UIManagerPatchProgressionPrefix));
-            harmony.Patch(TNH_UIManagerPatchEquipmentOriginal, new HarmonyMethod(TNH_UIManagerPatchEquipmentPrefix));
-            harmony.Patch(TNH_UIManagerPatchHealthModeOriginal, new HarmonyMethod(TNH_UIManagerPatchHealthModePrefix));
-            harmony.Patch(TNH_UIManagerPatchTargetModeOriginal, new HarmonyMethod(TNH_UIManagerPatchTargetModePrefix));
-            harmony.Patch(TNH_UIManagerPatchAIDifficultyOriginal, new HarmonyMethod(TNH_UIManagerPatchAIDifficultyPrefix));
-            harmony.Patch(TNH_UIManagerPatchRadarModeOriginal, new HarmonyMethod(TNH_UIManagerPatchRadarModePrefix));
-            harmony.Patch(TNH_UIManagerPatchItemSpawnerModeOriginal, new HarmonyMethod(TNH_UIManagerPatchItemSpawnerModePrefix));
-            harmony.Patch(TNH_UIManagerPatchBackpackModeOriginal, new HarmonyMethod(TNH_UIManagerPatchBackpackModePrefix));
-            harmony.Patch(TNH_UIManagerPatchHealthMultOriginal, new HarmonyMethod(TNH_UIManagerPatchHealthMultPrefix));
-            harmony.Patch(TNH_UIManagerPatchSosigGunReloadOriginal, new HarmonyMethod(TNH_UIManagerPatchSosigGunReloadPrefix));
-            harmony.Patch(TNH_UIManagerPatchSeedOriginal, new HarmonyMethod(TNH_UIManagerPatchSeedPrefix));
-            harmony.Patch(TNH_UIManagerPatchNextLevelOriginal, new HarmonyMethod(TNH_UIManagerPatchNextLevelPrefix));
-            harmony.Patch(TNH_UIManagerPatchPrevLevelOriginal, new HarmonyMethod(TNH_UIManagerPatchPrevLevelPrefix));
+++patchIndex; // 2
+Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 
-            ++patchIndex; // 3
+// TNH_UIManagerPatch
+Mod.LogInfo("=== TNH_UIManagerPatch - Starting ===");
+Mod.LogInfo("Getting original methods...");
+MethodInfo TNH_UIManagerPatchProgressionOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_Progression", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchProgressionPrefix = typeof(TNH_UIManagerPatch).GetMethod("ProgressionPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchEquipmentOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_EquipmentMode", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchEquipmentPrefix = typeof(TNH_UIManagerPatch).GetMethod("EquipmentPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchHealthModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_HealthMode", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchHealthModePrefix = typeof(TNH_UIManagerPatch).GetMethod("HealthModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchTargetModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_TargetMode", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchTargetModePrefix = typeof(TNH_UIManagerPatch).GetMethod("TargetPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchAIDifficultyOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_AIDifficulty", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchAIDifficultyPrefix = typeof(TNH_UIManagerPatch).GetMethod("AIDifficultyPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchRadarModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_AIRadarMode", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchRadarModePrefix = typeof(TNH_UIManagerPatch).GetMethod("RadarModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchItemSpawnerModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_ItemSpawner", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchItemSpawnerModePrefix = typeof(TNH_UIManagerPatch).GetMethod("ItemSpawnerModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchBackpackModeOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_Backpack", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchBackpackModePrefix = typeof(TNH_UIManagerPatch).GetMethod("BackpackModePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchHealthMultOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_HealthMult", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchHealthMultPrefix = typeof(TNH_UIManagerPatch).GetMethod("HealthMultPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchSosigGunReloadOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_SosiggunShakeReloading", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchSosigGunReloadPrefix = typeof(TNH_UIManagerPatch).GetMethod("SosigGunReloadPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchSeedOriginal = typeof(TNH_UIManager).GetMethod("SetOBS_RunSeed", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchSeedPrefix = typeof(TNH_UIManagerPatch).GetMethod("SeedPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchNextLevelOriginal = typeof(TNH_UIManager).GetMethod("BTN_NextLevel", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchNextLevelPrefix = typeof(TNH_UIManagerPatch).GetMethod("NextLevelPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_UIManagerPatchPrevLevelOriginal = typeof(TNH_UIManager).GetMethod("BTN_PrevLevel", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_UIManagerPatchPrevLevelPrefix = typeof(TNH_UIManagerPatch).GetMethod("PrevLevelPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 
-            // TNH_ManagerPatch
-            MethodInfo TNH_ManagerPatchSetPhaseTakeOriginal = null;
-            MethodInfo TNH_ManagerGeneratePatrolOriginal = null;
-            if (PatchController.TNHTweakerAsmIdx > -1)
-            {
-                TNH_ManagerPatchSetPhaseTakeOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SetPhase_Take_Replacement", BindingFlags.Public | BindingFlags.Static);
-                Mod.LogInfo("About to patch TNH tweaker SetPhase_Take_Replacement, null?: " + (TNH_ManagerPatchSetPhaseTakeOriginal == null));
-                TNH_ManagerGeneratePatrolOriginal = PatchController.TNHTweaker_PatrolPatches.GetMethod("GeneratePatrol", BindingFlags.Public | BindingFlags.Static, null, CallingConventions.Any, new Type[] { typeof(TNH_Manager), PatchController.TNHTweaker_Patrol, typeof(List<Vector3>), typeof(List<Vector3>), typeof(List<Vector3>), typeof(int) }, null);
-            }
-            else
-            {
-                TNH_ManagerPatchSetPhaseTakeOriginal = typeof(TNH_Manager).GetMethod("SetPhase_Take", BindingFlags.NonPublic | BindingFlags.Instance);
-                TNH_ManagerGeneratePatrolOriginal = typeof(TNH_Manager).GetMethod("GeneratePatrol", BindingFlags.NonPublic | BindingFlags.Instance);
-            }
-            MethodInfo TNH_ManagerPatchPlayerDiedOriginal = typeof(TNH_Manager).GetMethod("PlayerDied", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchPlayerDiedPostfix = typeof(TNH_ManagerPatch).GetMethod("PlayerDiedPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchAddTokensOriginal = typeof(TNH_Manager).GetMethod("AddTokens", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchAddTokensPrefix = typeof(TNH_ManagerPatch).GetMethod("AddTokensPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSosigKillOriginal = typeof(TNH_Manager).GetMethod("OnSosigKill", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchSosigKillPrefix = typeof(TNH_ManagerPatch).GetMethod("OnSosigKillPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseOriginal = typeof(TNH_Manager).GetMethod("SetPhase", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchSetPhasePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchUpdateOriginal = typeof(TNH_Manager).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchInitBeginEquipOriginal = typeof(TNH_Manager).GetMethod("InitBeginningEquipment", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchInitBeginEquipPrefix = typeof(TNH_ManagerPatch).GetMethod("InitBeginEquipPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseTakePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseTakePostfix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseHoldOriginal = typeof(TNH_Manager).GetMethod("SetPhase_Hold", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchSetPhaseHoldPrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseHoldPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseHoldPostfix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseHoldPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseCompleteOriginal = typeof(TNH_Manager).GetMethod("SetPhase_Completed", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchSetPhaseCompletePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseCompletePrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetPhaseCompletePostfix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseCompletePostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchSetLevelOriginal = typeof(TNH_Manager).GetMethod("SetLevel", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchSetLevelPrefix = typeof(TNH_ManagerPatch).GetMethod("SetLevelPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchOnShotFiredOriginal = typeof(TNH_Manager).GetMethod("OnShotFired", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchOnShotFiredPrefix = typeof(TNH_ManagerPatch).GetMethod("OnShotFiredPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchOnBotShotFiredOriginal = typeof(TNH_Manager).GetMethod("OnBotShotFired", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchOnBotShotFiredPrefix = typeof(TNH_ManagerPatch).GetMethod("OnBotShotFiredPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerPatchAddFVRObjectToTrackedListOriginal = typeof(TNH_Manager).GetMethod("AddFVRObjectToTrackedList", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo TNH_ManagerPatchAddFVRObjectToTrackedListPrefix = typeof(TNH_ManagerPatch).GetMethod("AddFVRObjectToTrackedListPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerGenerateSentryPatrolOriginal = typeof(TNH_Manager).GetMethod("GenerateSentryPatrol", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerGenerateSentryPatrolPrefix = typeof(TNH_ManagerPatch).GetMethod("GenerateSentryPatrolPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerGenerateSentryPatrolPostfix = typeof(TNH_ManagerPatch).GetMethod("GenerateSentryPatrolPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerGeneratePatrolPrefix = typeof(TNH_ManagerPatch).GetMethod("GeneratePatrolPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerGeneratePatrolPostfix = typeof(TNH_ManagerPatch).GetMethod("GeneratePatrolPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerDelayedInitOriginal = typeof(TNH_Manager).GetMethod("DelayedInit", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerDelayedInitPrefix = typeof(TNH_ManagerPatch).GetMethod("DelayedInitPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerDelayedInitPostfix = typeof(TNH_ManagerPatch).GetMethod("DelayedInitPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo TNH_ManagerObjectCleanupInHoldOriginal = typeof(TNH_Manager).GetMethod("ObjectCleanupInHold", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo TNH_ManagerObjectCleanupInHoldPrefix = typeof(TNH_ManagerPatch).GetMethod("ObjectCleanupInHoldPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo("Verifying originals...");
+PatchController.Verify(TNH_UIManagerPatchProgressionOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchEquipmentOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchHealthModeOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchTargetModeOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchAIDifficultyOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchRadarModeOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchItemSpawnerModeOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchBackpackModeOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchHealthMultOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchSosigGunReloadOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchSeedOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchNextLevelOriginal, harmony, false);
+PatchController.Verify(TNH_UIManagerPatchPrevLevelOriginal, harmony, false);
 
-            PatchController.Verify(TNH_ManagerPatchPlayerDiedOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchAddTokensOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchSosigKillOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchSetPhaseOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchUpdateOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchInitBeginEquipOriginal, harmony, true);
-    Mod.LogInfo("TNH_ManagerPatchSetPhaseTakeOriginal null?: " + (TNH_ManagerPatchSetPhaseTakeOriginal == null));
+Mod.LogInfo("Applying UIManager patches...");
+try { harmony.Patch(TNH_UIManagerPatchProgressionOriginal, new HarmonyMethod(TNH_UIManagerPatchProgressionPrefix)); Mod.LogInfo("✓ Progression"); }
+catch (Exception ex) { Mod.LogError($"✗ Progression: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchEquipmentOriginal, new HarmonyMethod(TNH_UIManagerPatchEquipmentPrefix)); Mod.LogInfo("✓ Equipment"); }
+catch (Exception ex) { Mod.LogError($"✗ Equipment: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchHealthModeOriginal, new HarmonyMethod(TNH_UIManagerPatchHealthModePrefix)); Mod.LogInfo("✓ HealthMode"); }
+catch (Exception ex) { Mod.LogError($"✗ HealthMode: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchTargetModeOriginal, new HarmonyMethod(TNH_UIManagerPatchTargetModePrefix)); Mod.LogInfo("✓ TargetMode"); }
+catch (Exception ex) { Mod.LogError($"✗ TargetMode: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchAIDifficultyOriginal, new HarmonyMethod(TNH_UIManagerPatchAIDifficultyPrefix)); Mod.LogInfo("✓ AIDifficulty"); }
+catch (Exception ex) { Mod.LogError($"✗ AIDifficulty: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchRadarModeOriginal, new HarmonyMethod(TNH_UIManagerPatchRadarModePrefix)); Mod.LogInfo("✓ RadarMode"); }
+catch (Exception ex) { Mod.LogError($"✗ RadarMode: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchItemSpawnerModeOriginal, new HarmonyMethod(TNH_UIManagerPatchItemSpawnerModePrefix)); Mod.LogInfo("✓ ItemSpawnerMode"); }
+catch (Exception ex) { Mod.LogError($"✗ ItemSpawnerMode: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchBackpackModeOriginal, new HarmonyMethod(TNH_UIManagerPatchBackpackModePrefix)); Mod.LogInfo("✓ BackpackMode"); }
+catch (Exception ex) { Mod.LogError($"✗ BackpackMode: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchHealthMultOriginal, new HarmonyMethod(TNH_UIManagerPatchHealthMultPrefix)); Mod.LogInfo("✓ HealthMult"); }
+catch (Exception ex) { Mod.LogError($"✗ HealthMult: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchSosigGunReloadOriginal, new HarmonyMethod(TNH_UIManagerPatchSosigGunReloadPrefix)); Mod.LogInfo("✓ SosigGunReload"); }
+catch (Exception ex) { Mod.LogError($"✗ SosigGunReload: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchSeedOriginal, new HarmonyMethod(TNH_UIManagerPatchSeedPrefix)); Mod.LogInfo("✓ Seed"); }
+catch (Exception ex) { Mod.LogError($"✗ Seed: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchNextLevelOriginal, new HarmonyMethod(TNH_UIManagerPatchNextLevelPrefix)); Mod.LogInfo("✓ NextLevel"); }
+catch (Exception ex) { Mod.LogError($"✗ NextLevel: {ex.Message}"); }
+
+try { harmony.Patch(TNH_UIManagerPatchPrevLevelOriginal, new HarmonyMethod(TNH_UIManagerPatchPrevLevelPrefix)); Mod.LogInfo("✓ PrevLevel"); }
+catch (Exception ex) { Mod.LogError($"✗ PrevLevel: {ex.Message}"); }
+
+++patchIndex; // 3
+Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
+
+// TNH_ManagerPatch
+Mod.LogInfo("=== TNH_ManagerPatch - Starting ===");
+MethodInfo TNH_ManagerPatchSetPhaseTakeOriginal = null;
+MethodInfo TNH_ManagerGeneratePatrolOriginal = null;
+if (PatchController.TNHTweakerAsmIdx > -1)
+{
+    Mod.LogInfo("Using TNHTweaker path...");
+    TNH_ManagerPatchSetPhaseTakeOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SetPhase_Take_Replacement", BindingFlags.Public | BindingFlags.Static);
+    Mod.LogInfo("About to patch TNH tweaker SetPhase_Take_Replacement, null?: " + (TNH_ManagerPatchSetPhaseTakeOriginal == null));
+    TNH_ManagerGeneratePatrolOriginal = PatchController.TNHTweaker_PatrolPatches.GetMethod("GeneratePatrol", BindingFlags.Public | BindingFlags.Static, null, CallingConventions.Any, new Type[] { typeof(TNH_Manager), PatchController.TNHTweaker_Patrol, typeof(List<Vector3>), typeof(List<Vector3>), typeof(List<Vector3>), typeof(int) }, null);
+}
+else
+{
+    Mod.LogInfo("Using vanilla H3VR path...");
+    TNH_ManagerPatchSetPhaseTakeOriginal = typeof(TNH_Manager).GetMethod("SetPhase_Take", BindingFlags.NonPublic | BindingFlags.Instance);
+    TNH_ManagerGeneratePatrolOriginal = typeof(TNH_Manager).GetMethod("GeneratePatrol", BindingFlags.NonPublic | BindingFlags.Instance);
+}
+
+Mod.LogInfo("Getting remaining TNH_Manager methods...");
+MethodInfo TNH_ManagerPatchPlayerDiedOriginal = typeof(TNH_Manager).GetMethod("PlayerDied", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchPlayerDiedPostfix = typeof(TNH_ManagerPatch).GetMethod("PlayerDiedPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchAddTokensOriginal = typeof(TNH_Manager).GetMethod("AddTokens", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchAddTokensPrefix = typeof(TNH_ManagerPatch).GetMethod("AddTokensPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSosigKillOriginal = typeof(TNH_Manager).GetMethod("OnSosigKill", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchSosigKillPrefix = typeof(TNH_ManagerPatch).GetMethod("OnSosigKillPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseOriginal = typeof(TNH_Manager).GetMethod("SetPhase", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchSetPhasePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchUpdateOriginal = typeof(TNH_Manager).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchInitBeginEquipOriginal = typeof(TNH_Manager).GetMethod("InitBeginningEquipment", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchInitBeginEquipPrefix = typeof(TNH_ManagerPatch).GetMethod("InitBeginEquipPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseTakePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseTakePostfix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseHoldOriginal = typeof(TNH_Manager).GetMethod("SetPhase_Hold", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchSetPhaseHoldPrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseHoldPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseHoldPostfix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseHoldPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseCompleteOriginal = typeof(TNH_Manager).GetMethod("SetPhase_Completed", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchSetPhaseCompletePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseCompletePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetPhaseCompletePostfix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseCompletePostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchSetLevelOriginal = typeof(TNH_Manager).GetMethod("SetLevel", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchSetLevelPrefix = typeof(TNH_ManagerPatch).GetMethod("SetLevelPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchOnShotFiredOriginal = typeof(TNH_Manager).GetMethod("OnShotFired", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchOnShotFiredPrefix = typeof(TNH_ManagerPatch).GetMethod("OnShotFiredPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchOnBotShotFiredOriginal = typeof(TNH_Manager).GetMethod("OnBotShotFired", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchOnBotShotFiredPrefix = typeof(TNH_ManagerPatch).GetMethod("OnBotShotFiredPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerPatchAddFVRObjectToTrackedListOriginal = typeof(TNH_Manager).GetMethod("AddFVRObjectToTrackedList", BindingFlags.Public | BindingFlags.Instance);
+MethodInfo TNH_ManagerPatchAddFVRObjectToTrackedListPrefix = typeof(TNH_ManagerPatch).GetMethod("AddFVRObjectToTrackedListPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerGenerateSentryPatrolOriginal = typeof(TNH_Manager).GetMethod("GenerateSentryPatrol", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerGenerateSentryPatrolPrefix = typeof(TNH_ManagerPatch).GetMethod("GenerateSentryPatrolPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerGenerateSentryPatrolPostfix = typeof(TNH_ManagerPatch).GetMethod("GenerateSentryPatrolPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerGeneratePatrolPrefix = typeof(TNH_ManagerPatch).GetMethod("GeneratePatrolPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerGeneratePatrolPostfix = typeof(TNH_ManagerPatch).GetMethod("GeneratePatrolPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerDelayedInitOriginal = typeof(TNH_Manager).GetMethod("DelayedInit", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerDelayedInitPrefix = typeof(TNH_ManagerPatch).GetMethod("DelayedInitPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerDelayedInitPostfix = typeof(TNH_ManagerPatch).GetMethod("DelayedInitPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_ManagerObjectCleanupInHoldOriginal = typeof(TNH_Manager).GetMethod("ObjectCleanupInHold", BindingFlags.NonPublic | BindingFlags.Instance);
+MethodInfo TNH_ManagerObjectCleanupInHoldPrefix = typeof(TNH_ManagerPatch).GetMethod("ObjectCleanupInHoldPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+
+Mod.LogInfo("Verifying TNH_Manager originals...");
+PatchController.Verify(TNH_ManagerPatchPlayerDiedOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchAddTokensOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchSosigKillOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchSetPhaseOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchUpdateOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchInitBeginEquipOriginal, harmony, true);
+Mod.LogInfo("TNH_ManagerPatchSetPhaseTakeOriginal null?: " + (TNH_ManagerPatchSetPhaseTakeOriginal == null));
 Mod.LogInfo("TNH_ManagerGeneratePatrolOriginal null?: " + (TNH_ManagerGeneratePatrolOriginal == null));
-            PatchController.Verify(TNH_ManagerPatchSetPhaseTakeOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchSetPhaseHoldOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchSetPhaseCompleteOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchSetLevelOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchOnShotFiredOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchOnBotShotFiredOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerPatchAddFVRObjectToTrackedListOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerGenerateSentryPatrolOriginal, harmony, true);
-    PatchController.Verify(TNH_ManagerGeneratePatrolOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerDelayedInitOriginal, harmony, true);
-            PatchController.Verify(TNH_ManagerObjectCleanupInHoldOriginal, harmony, false);
-            harmony.Patch(TNH_ManagerPatchPlayerDiedOriginal, null, new HarmonyMethod(TNH_ManagerPatchPlayerDiedPostfix));
-            harmony.Patch(TNH_ManagerPatchAddTokensOriginal, new HarmonyMethod(TNH_ManagerPatchAddTokensPrefix));
-            harmony.Patch(TNH_ManagerPatchSosigKillOriginal, new HarmonyMethod(TNH_ManagerPatchSosigKillPrefix));
-            harmony.Patch(TNH_ManagerPatchSetPhaseOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhasePrefix));
-            harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix));
-            harmony.Patch(TNH_ManagerPatchInitBeginEquipOriginal, new HarmonyMethod(TNH_ManagerPatchInitBeginEquipPrefix));
-            harmony.Patch(TNH_ManagerPatchSetLevelOriginal, new HarmonyMethod(TNH_ManagerPatchSetLevelPrefix));
-    harmony.Patch(TNH_ManagerPatchSetPhaseTakeOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseTakePrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseTakePostfix));
-            harmony.Patch(TNH_ManagerPatchSetPhaseHoldOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseHoldPrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseHoldPostfix));
-            harmony.Patch(TNH_ManagerPatchSetPhaseCompleteOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseCompletePrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseCompletePostfix));
-            harmony.Patch(TNH_ManagerPatchOnShotFiredOriginal, new HarmonyMethod(TNH_ManagerPatchOnShotFiredPrefix));
-            harmony.Patch(TNH_ManagerPatchOnBotShotFiredOriginal, new HarmonyMethod(TNH_ManagerPatchOnBotShotFiredPrefix));
-            harmony.Patch(TNH_ManagerPatchAddFVRObjectToTrackedListOriginal, new HarmonyMethod(TNH_ManagerPatchAddFVRObjectToTrackedListPrefix));
-            harmony.Patch(TNH_ManagerGenerateSentryPatrolOriginal, new HarmonyMethod(TNH_ManagerGenerateSentryPatrolPrefix), new HarmonyMethod(TNH_ManagerGenerateSentryPatrolPostfix));
-    harmony.Patch(TNH_ManagerGeneratePatrolOriginal, new HarmonyMethod(TNH_ManagerGeneratePatrolPrefix), new HarmonyMethod(TNH_ManagerGeneratePatrolPostfix));
-            harmony.Patch(TNH_ManagerDelayedInitOriginal, new HarmonyMethod(TNH_ManagerDelayedInitPrefix), new HarmonyMethod(TNH_ManagerDelayedInitPostfix));
-            harmony.Patch(TNH_ManagerObjectCleanupInHoldOriginal, new HarmonyMethod(TNH_ManagerObjectCleanupInHoldPrefix));
+PatchController.Verify(TNH_ManagerPatchSetPhaseTakeOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchSetPhaseHoldOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchSetPhaseCompleteOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchSetLevelOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchOnShotFiredOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchOnBotShotFiredOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerPatchAddFVRObjectToTrackedListOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerGenerateSentryPatrolOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerGeneratePatrolOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerDelayedInitOriginal, harmony, true);
+PatchController.Verify(TNH_ManagerObjectCleanupInHoldOriginal, harmony, false);
 
-            ++patchIndex; // 4
+Mod.LogInfo("Applying TNH_Manager patches...");
+try { harmony.Patch(TNH_ManagerPatchPlayerDiedOriginal, null, new HarmonyMethod(TNH_ManagerPatchPlayerDiedPostfix)); Mod.LogInfo("✓ PlayerDied"); }
+catch (Exception ex) { Mod.LogError($"✗ PlayerDied: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchAddTokensOriginal, new HarmonyMethod(TNH_ManagerPatchAddTokensPrefix)); Mod.LogInfo("✓ AddTokens"); }
+catch (Exception ex) { Mod.LogError($"✗ AddTokens: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchSosigKillOriginal, new HarmonyMethod(TNH_ManagerPatchSosigKillPrefix)); Mod.LogInfo("✓ SosigKill"); }
+catch (Exception ex) { Mod.LogError($"✗ SosigKill: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchSetPhaseOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhasePrefix)); Mod.LogInfo("✓ SetPhase"); }
+catch (Exception ex) { Mod.LogError($"✗ SetPhase: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
+catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchInitBeginEquipOriginal, new HarmonyMethod(TNH_ManagerPatchInitBeginEquipPrefix)); Mod.LogInfo("✓ InitBeginEquip"); }
+catch (Exception ex) { Mod.LogError($"✗ InitBeginEquip: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchSetLevelOriginal, new HarmonyMethod(TNH_ManagerPatchSetLevelPrefix)); Mod.LogInfo("✓ SetLevel"); }
+catch (Exception ex) { Mod.LogError($"✗ SetLevel: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchSetPhaseTakeOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseTakePrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseTakePostfix)); Mod.LogInfo("✓ SetPhaseTake"); }
+catch (Exception ex) { Mod.LogError($"✗ SetPhaseTake: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchSetPhaseHoldOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseHoldPrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseHoldPostfix)); Mod.LogInfo("✓ SetPhaseHold"); }
+catch (Exception ex) { Mod.LogError($"✗ SetPhaseHold: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchSetPhaseCompleteOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhaseCompletePrefix), new HarmonyMethod(TNH_ManagerPatchSetPhaseCompletePostfix)); Mod.LogInfo("✓ SetPhaseComplete"); }
+catch (Exception ex) { Mod.LogError($"✗ SetPhaseComplete: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchOnShotFiredOriginal, new HarmonyMethod(TNH_ManagerPatchOnShotFiredPrefix)); Mod.LogInfo("✓ OnShotFired"); }
+catch (Exception ex) { Mod.LogError($"✗ OnShotFired: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchOnBotShotFiredOriginal, new HarmonyMethod(TNH_ManagerPatchOnBotShotFiredPrefix)); Mod.LogInfo("✓ OnBotShotFired"); }
+catch (Exception ex) { Mod.LogError($"✗ OnBotShotFired: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerPatchAddFVRObjectToTrackedListOriginal, new HarmonyMethod(TNH_ManagerPatchAddFVRObjectToTrackedListPrefix)); Mod.LogInfo("✓ AddFVRObjectToTrackedList"); }
+catch (Exception ex) { Mod.LogError($"✗ AddFVRObjectToTrackedList: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerGenerateSentryPatrolOriginal, new HarmonyMethod(TNH_ManagerGenerateSentryPatrolPrefix), new HarmonyMethod(TNH_ManagerGenerateSentryPatrolPostfix)); Mod.LogInfo("✓ GenerateSentryPatrol"); }
+catch (Exception ex) { Mod.LogError($"✗ GenerateSentryPatrol: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerGeneratePatrolOriginal, new HarmonyMethod(TNH_ManagerGeneratePatrolPrefix), new HarmonyMethod(TNH_ManagerGeneratePatrolPostfix)); Mod.LogInfo("✓ GeneratePatrol"); }
+catch (Exception ex) { Mod.LogError($"✗ GeneratePatrol: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerDelayedInitOriginal, new HarmonyMethod(TNH_ManagerDelayedInitPrefix), new HarmonyMethod(TNH_ManagerDelayedInitPostfix)); Mod.LogInfo("✓ DelayedInit"); }
+catch (Exception ex) { Mod.LogError($"✗ DelayedInit: {ex.Message}\n{ex.StackTrace}"); }
+
+try { harmony.Patch(TNH_ManagerObjectCleanupInHoldOriginal, new HarmonyMethod(TNH_ManagerObjectCleanupInHoldPrefix)); Mod.LogInfo("✓ ObjectCleanupInHold"); }
+catch (Exception ex) { Mod.LogError($"✗ ObjectCleanupInHold: {ex.Message}\n{ex.StackTrace}"); }
+
+++patchIndex; // 4
+Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 
             // TNHSupplyPointPatch
 if (PatchController.TNHTweakerAsmIdx > -1)
