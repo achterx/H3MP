@@ -186,89 +186,231 @@ Mod.LogInfo("TNH_ManagerGeneratePatrolOriginal null?: " + (TNH_ManagerGeneratePa
             ++patchIndex; // 4
 
             // TNHSupplyPointPatch
-            if (PatchController.TNHTweakerAsmIdx > -1)
-            {
-                MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyGroup", BindingFlags.Public | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnDefensesOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyTurrets", BindingFlags.Public | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyBoxes", BindingFlags.Public | BindingFlags.Static);
-                PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false);
-                PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false);
-try
+if (PatchController.TNHTweakerAsmIdx > -1)
 {
-    PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false);
+    Mod.LogInfo("=== TNHTweaker Path - Getting Methods ===");
+    MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyGroup", BindingFlags.Public | BindingFlags.Static);
+    Mod.LogInfo($"SpawnSupplyGroup: {TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnDefensesOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyTurrets", BindingFlags.Public | BindingFlags.Static);
+    Mod.LogInfo($"SpawnSupplyTurrets: {TNHSupplyPointPatchSpawnDefensesOriginal != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = PatchController.TNHTweaker_TNHPatches.GetMethod("SpawnSupplyBoxes", BindingFlags.Public | BindingFlags.Static);
+    Mod.LogInfo($"SpawnSupplyBoxes: {TNHSupplyPointPatchSpawnBoxesOriginal != null}");
+    
+    Mod.LogInfo("=== Verifying Originals ===");
+    PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false);
+    PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false);
+    try
+    {
+        PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false);
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"SpawnBoxes Verify failed: {ex.Message}\n{ex.StackTrace}");
+    }
+    
+    Mod.LogInfo("=== Getting Prefix/Postfix Methods ===");
+    MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"TNHTweaker_SpawnTakeEnemyGroupPrefix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"TNHTweaker_SpawnTakeEnemyGroupPostfix: {TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"TNHTweaker_SpawnDefensesPrefix: {TNHSupplyPointPatchSpawnDefensesPrefix != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnDefensesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"TNHTweaker_SpawnDefensesPostfix: {TNHSupplyPointPatchSpawnDefensesPostfix != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnBoxesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnBoxesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"TNHTweaker_SpawnBoxesPrefix: {TNHSupplyPointPatchSpawnBoxesPrefix != null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnBoxesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnBoxesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"TNHTweaker_SpawnBoxesPostfix: {TNHSupplyPointPatchSpawnBoxesPostfix != null}");
+    
+    Mod.LogInfo("=== Applying Patches ===");
+    try
+    {
+        harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
+        Mod.LogInfo("✓ SpawnTakeEnemyGroup patched");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"✗ SpawnTakeEnemyGroup patch failed: {ex.Message}\n{ex.StackTrace}");
+    }
+    
+    try
+    {
+        harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
+        Mod.LogInfo("✓ SpawnDefenses patched");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"✗ SpawnDefenses patch failed: {ex.Message}\n{ex.StackTrace}");
+    }
+    
+    try
+    {
+        harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
+        Mod.LogInfo("✓ SpawnBoxes patched");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"✗ SpawnBoxes patch failed: {ex.Message}\n{ex.StackTrace}");
+    }
 }
-catch (Exception ex)
+else
 {
-    Mod.LogError($"SpawnBoxes Verify failed: {ex.Message}\n{ex.StackTrace}");
-}
-                MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnDefensesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnDefensesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnBoxesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnBoxesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnBoxesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("TNHTweaker_SpawnBoxesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-                harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
-                harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
-                harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
-            }
-            else
-            {
-MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnTakeEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-MethodInfo TNHSupplyPointPatchSpawnDefensesOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnDefenses", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnBoxes", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(int), typeof(int), typeof(bool) }, null);
-                 Mod.LogInfo($"SpawnTakeEnemyGroup null?: {TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal == null}");
+    Mod.LogInfo("=== Vanilla H3VR Path - Getting Original Methods ===");
+    MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnTakeEnemyGroup", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+    Mod.LogInfo($"SpawnTakeEnemyGroup null?: {TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnDefensesOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnDefenses", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
     Mod.LogInfo($"SpawnDefenses null?: {TNHSupplyPointPatchSpawnDefensesOriginal == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnBoxesOriginal = typeof(TNH_SupplyPoint).GetMethod("SpawnBoxes", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(int), typeof(int), typeof(bool) }, null);
     Mod.LogInfo($"SpawnBoxes null?: {TNHSupplyPointPatchSpawnBoxesOriginal == null}");
-                PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false);
-                PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false);
-                PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false);
-                MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnDefensesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnDefensesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnBoxesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnBoxesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo TNHSupplyPointPatchSpawnBoxesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnBoxesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-                harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
-                harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
-                harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
-            }
+    
+    Mod.LogInfo("=== Verifying Originals ===");
+    try { PatchController.Verify(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, harmony, false); Mod.LogInfo("✓ SpawnTakeEnemyGroup verified"); }
+    catch (Exception ex) { Mod.LogError($"✗ SpawnTakeEnemyGroup verify failed: {ex.Message}"); }
+    
+    try { PatchController.Verify(TNHSupplyPointPatchSpawnDefensesOriginal, harmony, false); Mod.LogInfo("✓ SpawnDefenses verified"); }
+    catch (Exception ex) { Mod.LogError($"✗ SpawnDefenses verify failed: {ex.Message}"); }
+    
+    try { PatchController.Verify(TNHSupplyPointPatchSpawnBoxesOriginal, harmony, false); Mod.LogInfo("✓ SpawnBoxes verified"); }
+    catch (Exception ex) { Mod.LogError($"✗ SpawnBoxes verify failed: {ex.Message}"); }
+    
+    Mod.LogInfo("=== Getting Prefix/Postfix Methods ===");
+    MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnTakeEnemyGroupPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"SpawnTakeEnemyGroupPrefix null?: {TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnTakeEnemyGroupPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"SpawnTakeEnemyGroupPostfix null?: {TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnDefensesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnDefensesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"SpawnDefensesPrefix null?: {TNHSupplyPointPatchSpawnDefensesPrefix == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnDefensesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnDefensesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"SpawnDefensesPostfix null?: {TNHSupplyPointPatchSpawnDefensesPostfix == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnBoxesPrefix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnBoxesPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"SpawnBoxesPrefix null?: {TNHSupplyPointPatchSpawnBoxesPrefix == null}");
+    
+    MethodInfo TNHSupplyPointPatchSpawnBoxesPostfix = typeof(TNH_SupplyPointPatch).GetMethod("SpawnBoxesPostfix", BindingFlags.NonPublic | BindingFlags.Static);
+    Mod.LogInfo($"SpawnBoxesPostfix null?: {TNHSupplyPointPatchSpawnBoxesPostfix == null}");
+    
+    Mod.LogInfo("=== Applying Patches ===");
+    try
+    {
+        harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
+        Mod.LogInfo("✓ SpawnTakeEnemyGroup patched");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"✗ SpawnTakeEnemyGroup patch failed: {ex.Message}\n{ex.StackTrace}");
+    }
+    
+    try
+    {
+        harmony.Patch(TNHSupplyPointPatchSpawnDefensesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnDefensesPostfix));
+        Mod.LogInfo("✓ SpawnDefenses patched");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"✗ SpawnDefenses patch failed: {ex.Message}\n{ex.StackTrace}");
+    }
+    
+    try
+    {
+        harmony.Patch(TNHSupplyPointPatchSpawnBoxesOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnBoxesPostfix));
+        Mod.LogInfo("✓ SpawnBoxes patched");
+    }
+    catch (Exception ex)
+    {
+        Mod.LogError($"✗ SpawnBoxes patch failed: {ex.Message}\n{ex.StackTrace}");
+    }
+}
 
-            ++patchIndex; // 5
+++patchIndex; // 5
+Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 
-            // TAHReticleContactPatch
-            
-            
-            
-Mod.LogInfo("About to get TAH_ReticleContact.Tick");
-MethodInfo TAHReticleContactPatchTickOriginal = typeof(TAH_ReticleContact).GetMethod("Tick", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(UnityEngine.Vector3) }, null);Mod.LogInfo("Got Tick, about to get SetContactType");           
-            MethodInfo TAHReticleContactPatchTickTranspiler = typeof(TAHReticleContactPatch).GetMethod("TickTranspiler", BindingFlags.NonPublic | BindingFlags.Static);
+// TAHReticleContactPatch
+Mod.LogInfo("=== TAHReticleContactPatch - Starting ===");
+
+Mod.LogInfo("Step 1: Getting TAH_ReticleContact.Tick");
+MethodInfo TAHReticleContactPatchTickOriginal = typeof(TAH_ReticleContact).GetMethod("Tick", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(UnityEngine.Vector3) }, null);
+Mod.LogInfo($"Tick found: {TAHReticleContactPatchTickOriginal != null}");
+
+Mod.LogInfo("Step 2: Getting TickTranspiler");
+MethodInfo TAHReticleContactPatchTickTranspiler = typeof(TAHReticleContactPatch).GetMethod("TickTranspiler", BindingFlags.NonPublic | BindingFlags.Static);
+Mod.LogInfo($"TickTranspiler found: {TAHReticleContactPatchTickTranspiler != null}");
+
+Mod.LogInfo("Step 3: Getting SetContactTypePrefix");
 MethodInfo TAHReticleContactPatchSetContactTypePrefix = typeof(TAHReticleContactPatch)
     .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
     .FirstOrDefault(m => m.Name == "SetContactTypePrefix" && m.GetParameters().Length == 2);
-            MethodInfo TAHReticleContactPatchSetContactTypeOriginal = typeof(TAH_ReticleContact)
+Mod.LogInfo($"SetContactTypePrefix found: {TAHReticleContactPatchSetContactTypePrefix != null}");
+
+if (TAHReticleContactPatchSetContactTypePrefix == null)
+{
+    Mod.LogError("FAILED TO FIND SetContactTypePrefix! Listing all methods in TAHReticleContactPatch:");
+    var allMethods = typeof(TAHReticleContactPatch).GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+    foreach (var method in allMethods)
+    {
+        var parameters = string.Join(", ", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
+        Mod.LogInfo($"  Method: {method.Name}({parameters}) | Static: {method.IsStatic} | Public: {method.IsPublic} | ParamCount: {method.GetParameters().Length}");
+    }
+}
+
+Mod.LogInfo("Step 4: Getting SetContactType original");
+MethodInfo TAHReticleContactPatchSetContactTypeOriginal = typeof(TAH_ReticleContact)
     .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
     .FirstOrDefault(m => m.Name == "SetContactType" && m.GetParameters().Length == 1);
-            Mod.LogInfo("Got SetContactType successfully");
-            Mod.LogInfo("Got SetContactType successfully");
+Mod.LogInfo($"SetContactType original found: {TAHReticleContactPatchSetContactTypeOriginal != null}");
 
+Mod.LogInfo("=== Summary of Retrieved Methods ===");
 Mod.LogInfo($"TAHReticleContactPatchTickOriginal null?: {TAHReticleContactPatchTickOriginal == null}");
 Mod.LogInfo($"TAHReticleContactPatchTickTranspiler null?: {TAHReticleContactPatchTickTranspiler == null}");
 Mod.LogInfo($"TAHReticleContactPatchSetContactTypePrefix null?: {TAHReticleContactPatchSetContactTypePrefix == null}");
 Mod.LogInfo($"TAHReticleContactPatchSetContactTypeOriginal null?: {TAHReticleContactPatchSetContactTypeOriginal == null}");
 
-Mod.LogInfo("About to verify Tick...");
-            PatchController.Verify(TAHReticleContactPatchTickOriginal, harmony, false);
-            try
-            { 
-                harmony.Patch(TAHReticleContactPatchTickOriginal, null, null, new HarmonyMethod(TAHReticleContactPatchTickTranspiler));
-            }
-            catch (Exception ex)
-            {
-                Mod.LogError("Exception caught applying TNHPatches.TAHReticleContactPatch: " + ex.Message + ":\n" + ex.StackTrace);
-            }
-            harmony.Patch(TAHReticleContactPatchSetContactTypeOriginal, new HarmonyMethod(TAHReticleContactPatchSetContactTypePrefix));
+Mod.LogInfo("Step 5: Verifying Tick original...");
+try
+{
+    PatchController.Verify(TAHReticleContactPatchTickOriginal, harmony, false);
+    Mod.LogInfo("✓ Tick verified");
+}
+catch (Exception ex)
+{
+    Mod.LogError($"✗ Tick verify failed: {ex.Message}\n{ex.StackTrace}");
+}
 
-            ++patchIndex; // 6
+Mod.LogInfo("Step 6: Applying Tick transpiler patch...");
+try
+{ 
+    harmony.Patch(TAHReticleContactPatchTickOriginal, null, null, new HarmonyMethod(TAHReticleContactPatchTickTranspiler));
+    Mod.LogInfo("✓ Tick transpiler applied");
+}
+catch (Exception ex)
+{
+    Mod.LogError($"✗ Tick transpiler failed: {ex.Message}\n{ex.StackTrace}");
+}
+
+Mod.LogInfo("Step 7: Applying SetContactType prefix patch...");
+try
+{
+    harmony.Patch(TAHReticleContactPatchSetContactTypeOriginal, new HarmonyMethod(TAHReticleContactPatchSetContactTypePrefix));
+    Mod.LogInfo("✓ SetContactType prefix applied");
+}
+catch (Exception ex)
+{
+    Mod.LogError($"✗ SetContactType prefix failed: {ex.Message}\n{ex.StackTrace}");
+}
+
+++patchIndex; // 6
+Mod.LogInfo($"=== PATCH INDEX NOW: {patchIndex} ===");
 
 // TNH_HoldPointPatch
 Mod.LogInfo("=== STARTING PATCH INDEX 6: TNH_HOLDPOINT ===");
