@@ -327,6 +327,22 @@ Mod.LogInfo("Getting UpdatePrefix...");
 MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch)
     .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
     .FirstOrDefault(m => m.Name == "UpdatePrefix" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(TNH_HoldPoint));
+            Mod.LogInfo($"TNH_HoldPointPatchUpdatePrefix is null?: {TNH_HoldPointPatchUpdatePrefix == null}");
+if (TNH_HoldPointPatchUpdatePrefix == null)
+{
+    Mod.LogError("COULD NOT FIND UpdatePrefix! Listing all methods in TNH_HoldPointPatch:");
+    foreach (var method in typeof(TNH_HoldPointPatch).GetMethods(BindingFlags.NonPublic | BindingFlags.Static))
+    {
+        Mod.LogInfo($"  Method: {method.Name}, Params: {method.GetParameters().Length}");
+        if (method.Name == "UpdatePrefix")
+        {
+            foreach (var param in method.GetParameters())
+            {
+                Mod.LogInfo($"    Param type: {param.ParameterType.Name}");
+            }
+        }
+    }
+}
             Mod.LogInfo("Getting BeginAnalyzing...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingOriginal = typeof(TNH_HoldPoint).GetMethod("BeginAnalyzing", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 Mod.LogInfo("Getting BeginAnalyzingPostfix...");
