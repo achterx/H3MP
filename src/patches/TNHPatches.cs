@@ -619,7 +619,7 @@ MethodInfo TNH_HoldPointPatchUpdateOriginal = typeof(TNH_HoldPoint).GetMethod("U
 Mod.LogInfo("Getting BeginPhasePrefix...");
 MethodInfo TNH_HoldPointPatchBeginPhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("BeginPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting UpdatePrefix...");
-MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("HoldPointUpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static, null, new Type[] { typeof(TNH_HoldPoint) }, null);
             Mod.LogInfo($"TNH_HoldPointPatchUpdatePrefix is null?: {TNH_HoldPointPatchUpdatePrefix == null}");
 if (TNH_HoldPointPatchUpdatePrefix == null)
 {
