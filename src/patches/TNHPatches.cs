@@ -230,6 +230,7 @@ if (PatchController.TNHTweakerAsmIdx > -1)
     Mod.LogInfo($"TNHTweaker_SpawnBoxesPostfix: {TNHSupplyPointPatchSpawnBoxesPostfix != null}");
     
     Mod.LogInfo("=== Applying Patches ===");
+    Mod.LogInfo($"About to patch - Prefix null?: {TNHSupplyPointPatchSpawnBoxesPrefix == null}, Postfix null?: {TNHSupplyPointPatchSpawnBoxesPostfix == null}, Original null?: {TNHSupplyPointPatchSpawnBoxesOriginal == null}");
     try
     {
         harmony.Patch(TNHSupplyPointPatchSpawnTakeEnemyGroupOriginal, new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPrefix), new HarmonyMethod(TNHSupplyPointPatchSpawnTakeEnemyGroupPostfix));
