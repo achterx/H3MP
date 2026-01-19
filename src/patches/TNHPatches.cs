@@ -326,7 +326,8 @@ MethodInfo TNH_HoldPointPatchBeginPhasePrefix = typeof(TNH_HoldPointPatch).GetMe
 Mod.LogInfo("Getting UpdatePrefix...");
 MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch)
     .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-    .FirstOrDefault(m => m.Name == "UpdatePrefix" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(TNH_HoldPoint));Mod.LogInfo("Getting BeginAnalyzing...");
+    .FirstOrDefault(m => m.Name == "UpdatePrefix" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(TNH_HoldPoint));
+            Mod.LogInfo("Getting BeginAnalyzing...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingOriginal = typeof(TNH_HoldPoint).GetMethod("BeginAnalyzing", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 Mod.LogInfo("Getting BeginAnalyzingPostfix...");
 MethodInfo TNH_HoldPointPatchBeginAnalyzingPostfix = typeof(TNH_HoldPointPatch).GetMethod("BeginAnalyzingPostfix", BindingFlags.NonPublic | BindingFlags.Static);
@@ -421,6 +422,7 @@ harmony.Patch(TNH_HoldPointPatchRaiseSetCoverPointDataOriginal, new HarmonyMetho
 harmony.Patch(TNH_HoldPointPatchCompletePhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchCompletePhasePrefix));
 harmony.Patch(TNH_HoldPointPatchBeginAnalyzingOriginal, null, new HarmonyMethod(TNH_HoldPointPatchBeginAnalyzingPostfix));
 harmony.Patch(TNH_HoldPointPatchBeginPhaseOriginal, new HarmonyMethod(TNH_HoldPointPatchBeginPhasePrefix), new HarmonyMethod(TNH_HoldPointPatchBeginPhasePostfix));
+    harmony.Patch(TNH_HoldPointPatchUpdateOriginal, new HarmonyMethod(TNH_HoldPointPatchUpdatePrefix));
 harmony.Patch(TNH_HoldPointPatchSpawnWarpInMarkersOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnWarpInMarkersPrefix));
 harmony.Patch(TNH_HoldPointPatchSpawnTargetGroupOriginal, new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPrefix), new HarmonyMethod(TNH_HoldPointPatchSpawnTargetGroupPostfix));
 harmony.Patch(TNH_HoldPointPatchIdentifyEncryptionOriginal, null, new HarmonyMethod(TNH_HoldPointPatchIdentifyEncryptionPostfix));
