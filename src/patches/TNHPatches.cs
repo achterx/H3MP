@@ -167,7 +167,7 @@ MethodInfo TNH_ManagerPatchSosigKillPrefix = typeof(TNH_ManagerPatch).GetMethod(
 MethodInfo TNH_ManagerPatchSetPhaseOriginal = typeof(TNH_Manager).GetMethod("SetPhase", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_ManagerPatchSetPhasePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchUpdateOriginal = typeof(TNH_Manager).GetMethod("Update", BindingFlags.Public | BindingFlags.Instance);
-MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
+//MethodInfo TNH_ManagerPatchUpdatePrefix = typeof(TNH_ManagerPatch).GetMethod("UpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchInitBeginEquipOriginal = typeof(TNH_Manager).GetMethod("InitBeginningEquipment", BindingFlags.NonPublic | BindingFlags.Instance);
 MethodInfo TNH_ManagerPatchInitBeginEquipPrefix = typeof(TNH_ManagerPatch).GetMethod("InitBeginEquipPrefix", BindingFlags.NonPublic | BindingFlags.Static);
 MethodInfo TNH_ManagerPatchSetPhaseTakePrefix = typeof(TNH_ManagerPatch).GetMethod("SetPhaseTakePrefix", BindingFlags.NonPublic | BindingFlags.Static);
@@ -231,8 +231,8 @@ catch (Exception ex) { Mod.LogError($"✗ SosigKill: {ex.Message}\n{ex.StackTrac
 try { harmony.Patch(TNH_ManagerPatchSetPhaseOriginal, new HarmonyMethod(TNH_ManagerPatchSetPhasePrefix)); Mod.LogInfo("✓ SetPhase"); }
 catch (Exception ex) { Mod.LogError($"✗ SetPhase: {ex.Message}\n{ex.StackTrace}"); }
 
-try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
-catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
+//try { harmony.Patch(TNH_ManagerPatchUpdateOriginal, new HarmonyMethod(TNH_ManagerPatchUpdatePrefix)); Mod.LogInfo("✓ Update"); }
+//catch (Exception ex) { Mod.LogError($"✗ Update: {ex.Message}\n{ex.StackTrace}"); }
 
 try { harmony.Patch(TNH_ManagerPatchInitBeginEquipOriginal, new HarmonyMethod(TNH_ManagerPatchInitBeginEquipPrefix)); Mod.LogInfo("✓ InitBeginEquip"); }
 catch (Exception ex) { Mod.LogError($"✗ InitBeginEquip: {ex.Message}\n{ex.StackTrace}"); }
@@ -557,9 +557,7 @@ MethodInfo TNH_HoldPointPatchUpdateOriginal = typeof(TNH_HoldPoint).GetMethod("U
 Mod.LogInfo("Getting BeginPhasePrefix...");
 MethodInfo TNH_HoldPointPatchBeginPhasePrefix = typeof(TNH_HoldPointPatch).GetMethod("BeginPhasePrefix", BindingFlags.NonPublic | BindingFlags.Static);
 Mod.LogInfo("Getting UpdatePrefix...");
-MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch)
-    .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-    .FirstOrDefault(m => m.Name == "UpdatePrefix" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(TNH_HoldPoint));
+MethodInfo TNH_HoldPointPatchUpdatePrefix = typeof(TNH_HoldPointPatch).GetMethod("HoldPointUpdatePrefix", BindingFlags.NonPublic | BindingFlags.Static);
             Mod.LogInfo($"TNH_HoldPointPatchUpdatePrefix is null?: {TNH_HoldPointPatchUpdatePrefix == null}");
 if (TNH_HoldPointPatchUpdatePrefix == null)
 {
@@ -1274,23 +1272,6 @@ Mod.LogInfo("=== TNH_HOLDPOINT PATCHES COMPLETE ===");
         public static bool inGeneratePatrol;
         public static List<Vector3> patrolPoints;
         public static int patrolIndex = -1;
-
-        private static bool UpdatePrefix(TNH_Manager __instance)
-{
-    // Only run Update on server/host
-    // Clients will receive networked Sosig data, they shouldn't spawn their own
-    if (Mod.managerObject == null)
-    {
-        return true; // Solo play, run normally
-    }
-    
-    if (!ThreadManager.host)
-    {
-        return false; // Client: skip Update to prevent double spawning
-    }
-    
-    return true; // Host/Server: run Update normally
-}
         
         static void PlayerDiedPostfix()
         {
@@ -2365,14 +2346,16 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
             inGeneratePatrol = false;
         }
 
-        static void SpawnEnemySosigPrefix()
-        {
-            if (Mod.managerObject != null)
-            {
-                Mod.LogWarning("Manager spawned enemy sosig: " + Environment.StackTrace);
-            }
-        }
-
+static bool SpawnEnemySosigPrefix()
+{
+    // Only host controls TNH spawning
+    if (Mod.managerObject != null && !ThreadManager.host)
+    {
+        return false; // Client: skip spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
         // Patches ObjectCleanupInHold to prevent destruction of objects we do not control
         static bool ObjectCleanupInHoldPrefix(TNH_Manager __instance)
         {
@@ -2448,7 +2431,7 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
 // ===== H3VR 120 Compatibility Wrappers =====
 
 
- static bool UpdatePrefix(TNH_HoldPoint __instance)
+static bool HoldPointUpdatePrefix(TNH_HoldPoint __instance)
 {
     // Skip if not in multiplayer TNH
     if (Mod.managerObject == null || Mod.currentTNHInstance == null)
@@ -3565,20 +3548,37 @@ static bool TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix()
     Mod.LogInfo("  RESULT: Allowing spawn");
     return true;
 }
-        static void SpawnEnemyGroupPrefix()
-        {
-            inSpawnEnemyGroup = true;
-        }
+
+static bool SpawnEnemyGroupPrefix()
+{
+    inSpawnEnemyGroup = true;
+    
+    // Only host controls TNH spawning
+    if (Mod.managerObject != null && !ThreadManager.host)
+    {
+        return false; // Client: skip spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
 
         static void SpawnEnemyGroupPostfix()
         {
             inSpawnEnemyGroup = false;
         }
 
-        static void SpawnTurretsPrefix()
-        {
-            inSpawnTurrets = true;
-        }
+static bool SpawnTurretsPrefix()
+{
+    inSpawnTurrets = true;
+    
+    // Only host controls TNH spawning
+    if (Mod.managerObject != null && !ThreadManager.host)
+    {
+        return false; // Client: skip spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
 
         static void SpawnTurretsPostfix()
         {
@@ -3635,13 +3635,16 @@ static bool TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix()
             return Mod.currentTNHInstance == null || (Mod.currentTNHInstance.controller == GameManager.ID);
         }
 
-        static void SpawnSystemNodePrefix()
-        {
-            if (Mod.managerObject != null)
-            {
-                Mod.LogWarning("SpawnSystemNodePrefix called: " + Environment.StackTrace);
-            }
-        }
+static bool SpawnSystemNodePrefix()
+{
+    // Only host controls TNH spawning
+    if (Mod.managerObject != null && !ThreadManager.host)
+    {
+        return false; // Client: skip spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
     }
 
     class TNH_SupplyPointPatch
@@ -4070,17 +4073,16 @@ static bool TNH_HoldPointPatchSpawnHoldEnemyGroupPrefix()
     // Patches TNH_WeaponCrate.Update to know when the case is open so we can put a timed destroyer on it if necessary
     class TNHWeaponCrateSpawnObjectsPatch
     {
-        static void SpawnObjectsRawPrefix(ref TNH_WeaponCrate __instance)
-        {
-            if (Mod.managerObject != null)
-            {
-                TimerDestroyer destroyer = __instance.GetComponent<TimerDestroyer>();
-                if (destroyer != null)
-                {
-                    destroyer.triggered = true;
-                }
-            }
-        }
+static bool SpawnObjectsRawPrefix(ref TNH_WeaponCrate __instance)
+{
+    // Only host controls TNH spawning
+    if (Mod.managerObject != null && !ThreadManager.host)
+    {
+        return false; // Client: skip spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
     }
 
     // Patches SceneLoader.LoadMG to know when we want to start loading into a TNH game
