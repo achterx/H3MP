@@ -359,7 +359,7 @@ if (TAHReticleContactPatchSetContactTypePrefix == null)
     var allMethods = typeof(TAHReticleContactPatch).GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
     foreach (var method in allMethods)
     {
-        var parameters = string.Join(", ", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
+var parameters = string.Join(", ", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}").ToArray());
         Mod.LogInfo($"  Method: {method.Name}({parameters}) | Static: {method.IsStatic} | Public: {method.IsPublic} | ParamCount: {method.GetParameters().Length}");
     }
 }
