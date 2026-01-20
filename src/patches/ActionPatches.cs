@@ -3826,56 +3826,6 @@ namespace H3MP.Patches
     // Patches Sosig update methods to prevent processing on non controlling client
     class SosigUpdatePatch
     {
-        static bool UpdatePrefix(Sosig __instance)
-{
-    // Skip if not connected
-    if (Mod.managerObject == null)
-    {
-        return true;
-    }
-    if(__instance.BuffSystems.Length >= 15 && __instance.BuffSystems[14] != null && int.TryParse(__instance.BuffSystems[14].name, out int parsed))
-    {
-        TrackedSosig trackedSosig = (TrackedSosig)TrackedObject.trackedReferences[parsed];
-        if (trackedSosig != null)
-        {
-            bool runOriginal = trackedSosig.data.controller == GameManager.ID;
-            if (!runOriginal)
-            {
-                // Call Sosig update methods we don't want to skip
-                if(__instance.Links[__instance.m_linkIndex] == null)
-                {
-                    for(int i=0; i < __instance.Links.Count; ++i)
-                    {
-                        if(__instance.Links[i] != null)
-                        {
-                            __instance.m_linkIndex = i;
-                            __instance.fakeEntityPos = __instance.Links[__instance.m_linkIndex].transform.position + UnityEngine.Random.onUnitSphere * 0.2f + __instance.Links[__instance.m_linkIndex].transform.up * 0.25f;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    __instance.fakeEntityPos = __instance.Links[__instance.m_linkIndex].transform.position + UnityEngine.Random.onUnitSphere * 0.2f + __instance.Links[__instance.m_linkIndex].transform.up * 0.25f;
-                }
-                __instance.E.FakePos = __instance.fakeEntityPos;
-                
-                // ADD THESE TWO LINES - Let sosigs detect all players!
-                __instance.E.UpdatePerception();
-                __instance.Priority.Compute(__instance.E);
-                
-                __instance.VaporizeUpdate();
-                __instance.HeadIconUpdate();
-                if (__instance.m_recoveringFromBallisticState)
-                {
-                    __instance.UpdateJoints(__instance.m_recoveryFromBallisticLerp);
-                }
-            }
-            return runOriginal;
-        }
-    }
-    return true;
-}
 
         static bool UpdatePrefix(Sosig __instance)
 
