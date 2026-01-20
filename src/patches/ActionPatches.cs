@@ -4237,10 +4237,22 @@ namespace H3MP.Patches
             }
         }
 
-        static void CommandGuardPointPrefix()
-        {
-            ++skipSendingOrder;
-        }
+static bool CommandGuardPointPrefix(Sosig __instance)
+{
+    ++skipSendingOrder;
+    
+    if (Mod.managerObject == null)
+    {
+        return true;
+    }
+    
+    TrackedSosig trackedSosig = GameManager.trackedSosigBySosig.ContainsKey(__instance) ? 
+                                 GameManager.trackedSosigBySosig[__instance] : 
+                                 __instance.GetComponent<TrackedSosig>();
+    
+    // Only let controller execute the command
+    return trackedSosig == null || trackedSosig.data.controller == GameManager.ID;
+}
 
         static void CommandGuardPointPostfix(Sosig __instance, Vector3 point, bool hardguard)
         {
@@ -4286,10 +4298,21 @@ namespace H3MP.Patches
             }
         }
 
-        static void CommandAssaultPointPrefix()
-        {
-            ++skipSendingOrder;
-        }
+    static bool CommandAssaultPointPrefix(Sosig __instance)
+{
+    ++skipSendingOrder;
+    
+    if (Mod.managerObject == null)
+    {
+        return true;
+    }
+    
+    TrackedSosig trackedSosig = GameManager.trackedSosigBySosig.ContainsKey(__instance) ? 
+                                 GameManager.trackedSosigBySosig[__instance] : 
+                                 __instance.GetComponent<TrackedSosig>();
+    
+    return trackedSosig == null || trackedSosig.data.controller == GameManager.ID;
+}
 
         static void CommandAssaultPointPostfix(Sosig __instance, Vector3 point)
         {
@@ -4334,10 +4357,21 @@ namespace H3MP.Patches
             }
         }
 
-        static void CommandIdlePrefix()
-        {
-            ++skipSendingOrder;
-        }
+static bool CommandIdlePrefix(Sosig __instance)
+{
+    ++skipSendingOrder;
+    
+    if (Mod.managerObject == null)
+    {
+        return true;
+    }
+    
+    TrackedSosig trackedSosig = GameManager.trackedSosigBySosig.ContainsKey(__instance) ? 
+                                 GameManager.trackedSosigBySosig[__instance] : 
+                                 __instance.GetComponent<TrackedSosig>();
+    
+    return trackedSosig == null || trackedSosig.data.controller == GameManager.ID;
+}
 
         static void CommandIdlePostfix(Sosig __instance, Vector3 point, Vector3 dominantDir)
         {
