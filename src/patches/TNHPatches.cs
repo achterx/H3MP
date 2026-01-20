@@ -2105,48 +2105,65 @@ TNH_HoldPointPatch.SafeConfigureSystemNode(
             return true;
         }
 
-        static void GenerateSentryPatrolPrefix(List<Vector3> PatrolPoints)
-        {
-            inGenerateSentryPatrol = true;
-            patrolIndex++;
-            patrolPoints = PatrolPoints;
-        }
+static bool GenerateSentryPatrolPrefix(List<Vector3> PatrolPoints)
+{
+    inGenerateSentryPatrol = true;
+    patrolIndex++;
+    patrolPoints = PatrolPoints;
+    
+    // Only host controls TNH patrol spawning
+    if (Mod.managerObject != null && !ThreadManager.host)
+    {
+        return false; // Client: skip patrol spawning
+    }
+    
+    return true; // Host/solo: spawn normally
+}
 
         static void GenerateSentryPatrolPostfix()
         {
             inGenerateSentryPatrol = false;
         }
 
-        static void GeneratePatrolPrefix()
+static bool GeneratePatrolPrefix()
+{
+    if (Mod.managerObject != null)
+    {
+        inGeneratePatrol = true;
+        patrolIndex++;
+        
+        // Only host controls TNH patrol spawning
+        if (!ThreadManager.host)
         {
-            if (Mod.managerObject != null)
+            return false; // Client: skip patrol spawning
+        }
+        
+        List<int> list = new List<int>();
+        int i = 0;
+        int num = 0;
+        while (i < 5)
+        {
+            int item = UnityEngine.Random.Range(0, GM.TNH_Manager.HoldPoints.Count);
+            if (!list.Contains(item))
             {
-                inGeneratePatrol = true;
-                patrolIndex++;
-                List<int> list = new List<int>();
-                int i = 0;
-                int num = 0;
-                while (i < 5)
-                {
-                    int item = UnityEngine.Random.Range(0, GM.TNH_Manager.HoldPoints.Count);
-                    if (!list.Contains(item))
-                    {
-                        list.Add(item);
-                        i++;
-                    }
-                    num++;
-                    if (num > 200)
-                    {
-                        break;
-                    }
-                }
-                patrolPoints = new List<Vector3>();
-                for (int j = 0; j < list.Count; j++)
-                {
-                    patrolPoints.Add(GM.TNH_Manager.HoldPoints[list[j]].SpawnPoints_Sosigs_Defense[UnityEngine.Random.Range(0, GM.TNH_Manager.HoldPoints[list[j]].SpawnPoints_Sosigs_Defense.Count)].position);
-                }
+                list.Add(item);
+                i++;
+            }
+            num++;
+            if (num > 200)
+            {
+                break;
             }
         }
+        patrolPoints = new List<Vector3>();
+        for (int j = 0; j < list.Count; j++)
+        {
+            patrolPoints.Add(GM.TNH_Manager.HoldPoints[list[j]].SpawnPoints_Sosigs_Defense[UnityEngine.Random.Range(0, GM.TNH_Manager.HoldPoints[list[j]].SpawnPoints_Sosigs_Defense.Count)].position);
+        }
+    }
+    
+    return true; // Host/solo: spawn normally
+}
 
         static void GeneratePatrolPostfix()
         {
