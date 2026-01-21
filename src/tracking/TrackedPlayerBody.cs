@@ -66,7 +66,7 @@ if (physicalPlayerBody.headTransform != null)  // ✅ CORRECT - use headTransfor
     if (headEntity == null)
     {
         headEntity = physicalPlayerBody.headTransform.gameObject.AddComponent<AIEntity>();  // ✅ CORRECT
-        headEntity.IFFCode = playerManager.IFF;
+        headEntity.IFFCode = GM.CurrentSceneSettings.DefaultPlayerIFF;
         // Removed IsAImed line - property doesn't exist
     }
     

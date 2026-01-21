@@ -8316,19 +8316,64 @@ namespace H3MP.Patches
                     __instance.m_pool_tail.PlayDelayedClip(delay, tailSet4, pos, tailSet4.VolumeRange * globalLoudnessMultiplier, __instance.AudioClipSet.TailPitchMod_Main * tailSet4.PitchRange.x);
                 }
             }
-            float soundTravelDistanceMultByEnvironment = SM.GetSoundTravelDistanceMultByEnvironment(env);
-            if (__instance.IsSuppressed())
-            {
-                GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Suppressed, __instance.AudioClipSet.Loudness_Suppressed * soundTravelDistanceMultByEnvironment * 0.5f * globalLoudnessMultiplier, pos, IFF, GM.CurrentPlayerBody.PlayerEntities[0]);
-            }
-            else if (__instance.AudioClipSet.UsesLowPressureSet && !round.IsHighPressure)
-            {
-                GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary * 0.6f, __instance.AudioClipSet.Loudness_Primary * 0.6f * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier, pos, IFF, GM.CurrentPlayerBody.PlayerEntities[0]);
-            }
-            else
-            {
-                GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary, __instance.AudioClipSet.Loudness_Primary * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier, pos, IFF, GM.CurrentPlayerBody.PlayerEntities[0]);
-            }
+float soundTravelDistanceMultByEnvironment = SM.GetSoundTravelDistanceMultByEnvironment(env);
+if (__instance.IsSuppressed())
+{
+    // Notify ALL players about the sound, not just local player
+    foreach (var player in GameManager.players.Values)
+    {
+        if (player.playerBody != null && player.playerBody.physicalPlayerBody != null &&
+            player.playerBody.physicalPlayerBody.entities != null &&
+            player.playerBody.physicalPlayerBody.entities.Length > 0)
+        {
+            GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Suppressed,
+                __instance.AudioClipSet.Loudness_Suppressed * soundTravelDistanceMultByEnvironment * 0.5f * globalLoudnessMultiplier,
+                pos, IFF, player.playerBody.physicalPlayerBody.entities[0]);
+        }
+    }
+    // Also notify local player
+    GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Suppressed,
+        __instance.AudioClipSet.Loudness_Suppressed * soundTravelDistanceMultByEnvironment * 0.5f * globalLoudnessMultiplier,
+        pos, IFF, GM.CurrentPlayerBody.PlayerEntities[0]);
+}
+else if (__instance.AudioClipSet.UsesLowPressureSet && !round.IsHighPressure)
+{
+    // Notify ALL players
+    foreach (var player in GameManager.players.Values)
+    {
+        if (player.playerBody != null && player.playerBody.physicalPlayerBody != null &&
+            player.playerBody.physicalPlayerBody.entities != null &&
+            player.playerBody.physicalPlayerBody.entities.Length > 0)
+        {
+            GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary * 0.6f,
+                __instance.AudioClipSet.Loudness_Primary * 0.6f * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier,
+                pos, IFF, player.playerBody.physicalPlayerBody.entities[0]);
+        }
+    }
+    // Also notify local player
+    GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary * 0.6f,
+        __instance.AudioClipSet.Loudness_Primary * 0.6f * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier,
+        pos, IFF, GM.CurrentPlayerBody.PlayerEntities[0]);
+}
+else
+{
+    // Notify ALL players
+    foreach (var player in GameManager.players.Values)
+    {
+        if (player.playerBody != null && player.playerBody.physicalPlayerBody != null &&
+            player.playerBody.physicalPlayerBody.entities != null &&
+            player.playerBody.physicalPlayerBody.entities.Length > 0)
+        {
+            GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary,
+                __instance.AudioClipSet.Loudness_Primary * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier,
+                pos, IFF, player.playerBody.physicalPlayerBody.entities[0]);
+        }
+    }
+    // Also notify local player
+    GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary,
+        __instance.AudioClipSet.Loudness_Primary * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier,
+        pos, IFF, GM.CurrentPlayerBody.PlayerEntities[0]);
+}
             if (!__instance.IsSuppressed())
             {
                 __instance.SceneSettings.PingReceivers(__instance.MuzzlePos.position);
