@@ -3876,6 +3876,7 @@ namespace H3MP.Patches
             }
             return true;
     }
+    }
 
     // Patches SosigInventory update methods to prevent processing on non controlling client
     class SosigInvUpdatePatch
