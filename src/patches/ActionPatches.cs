@@ -3826,9 +3826,7 @@ namespace H3MP.Patches
     // Patches Sosig update methods to prevent processing on non controlling client
     class SosigUpdatePatch
     {
-
         static bool UpdatePrefix(Sosig __instance)
-
         {
             // Skip if not connected
             if (Mod.managerObject == null)
@@ -3859,7 +3857,6 @@ namespace H3MP.Patches
                         }
                         else
                         {
-
                             __instance.fakeEntityPos = __instance.Links[__instance.m_linkIndex].transform.position + UnityEngine.Random.onUnitSphere * 0.2f + __instance.Links[__instance.m_linkIndex].transform.up * 0.25f;
                         }
                         __instance.E.FakePos = __instance.fakeEntityPos;
@@ -3870,12 +3867,30 @@ namespace H3MP.Patches
                             __instance.UpdateJoints(__instance.m_recoveryFromBallisticLerp);
                         }
                     }
-                    return true;
-
+                    return runOriginal;
                 }
             }
             return true;
-    }
+        }
+
+        static bool HandPhysUpdatePrefix(ref Sosig __instance)
+        {
+            // Skip if not connected
+            if (Mod.managerObject == null)
+            {
+                return true;
+            }
+
+            if (__instance.BuffSystems.Length >= 15 && __instance.BuffSystems[14] != null && int.TryParse(__instance.BuffSystems[14].name, out int parsed))
+            {
+                TrackedSosig trackedSosig = (TrackedSosig)TrackedObject.trackedReferences[parsed];
+                if (trackedSosig != null)
+                {
+                    return trackedSosig.data.controller == GameManager.ID;
+                }
+            }
+            return true;
+        }
     }
 
     // Patches SosigInventory update methods to prevent processing on non controlling client
@@ -4188,10 +4203,10 @@ namespace H3MP.Patches
             }
         }
 
-static void CommandGuardPointPrefix()
-{
-    ++skipSendingOrder;
-}
+        static void CommandGuardPointPrefix()
+        {
+            ++skipSendingOrder;
+        }
 
         static void CommandGuardPointPostfix(Sosig __instance, Vector3 point, bool hardguard)
         {
@@ -4237,10 +4252,10 @@ static void CommandGuardPointPrefix()
             }
         }
 
-static void CommandAssaultPointPrefix()
-{
-    ++skipSendingOrder;
-}
+        static void CommandAssaultPointPrefix()
+        {
+            ++skipSendingOrder;
+        }
 
         static void CommandAssaultPointPostfix(Sosig __instance, Vector3 point)
         {
@@ -4285,10 +4300,10 @@ static void CommandAssaultPointPrefix()
             }
         }
 
-static void CommandIdlePrefix()
-{
-    ++skipSendingOrder;
-}
+        static void CommandIdlePrefix()
+        {
+            ++skipSendingOrder;
+        }
 
         static void CommandIdlePostfix(Sosig __instance, Vector3 point, Vector3 dominantDir)
         {
