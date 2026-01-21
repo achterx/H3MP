@@ -8316,6 +8316,7 @@ namespace H3MP.Patches
                     __instance.m_pool_tail.PlayDelayedClip(delay, tailSet4, pos, tailSet4.VolumeRange * globalLoudnessMultiplier, __instance.AudioClipSet.TailPitchMod_Main * tailSet4.PitchRange.x);
                 }
             }
+float soundTravelDistanceMultByEnvironment = SM.GetSoundTravelDistanceMultByEnvironment(env);
 if (__instance.IsSuppressed())
 {
     // Notify ALL players about the sound, not just local player
