@@ -8321,11 +8321,13 @@ if (__instance.IsSuppressed())
     // Notify ALL players about the sound, not just local player
     foreach (var player in GameManager.players.Values)
     {
-        if (player.playerBody != null && player.playerBody.PlayerEntities != null && player.playerBody.PlayerEntities.Count > 0)
+        if (player.playerBody != null && player.playerBody.physicalPlayerBody != null && 
+            player.playerBody.physicalPlayerBody.PlayerEntities != null && 
+            player.playerBody.physicalPlayerBody.PlayerEntities.Count > 0)
         {
             GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Suppressed,
                 __instance.AudioClipSet.Loudness_Suppressed * soundTravelDistanceMultByEnvironment * 0.5f * globalLoudnessMultiplier,
-                pos, IFF, player.playerBody.PlayerEntities[0]);
+                pos, IFF, player.playerBody.physicalPlayerBody.PlayerEntities[0]);
         }
     }
     // Also notify local player
@@ -8338,11 +8340,13 @@ else if (__instance.AudioClipSet.UsesLowPressureSet && !round.IsHighPressure)
     // Notify ALL players
     foreach (var player in GameManager.players.Values)
     {
-        if (player.playerBody != null && player.playerBody.PlayerEntities != null && player.playerBody.PlayerEntities.Count > 0)
+        if (player.playerBody != null && player.playerBody.physicalPlayerBody != null && 
+            player.playerBody.physicalPlayerBody.PlayerEntities != null && 
+            player.playerBody.physicalPlayerBody.PlayerEntities.Count > 0)
         {
             GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary * 0.6f,
                 __instance.AudioClipSet.Loudness_Primary * 0.6f * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier,
-                pos, IFF, player.playerBody.PlayerEntities[0]);
+                pos, IFF, player.playerBody.physicalPlayerBody.PlayerEntities[0]);
         }
     }
     // Also notify local player
@@ -8355,11 +8359,13 @@ else
     // Notify ALL players
     foreach (var player in GameManager.players.Values)
     {
-        if (player.playerBody != null && player.playerBody.PlayerEntities != null && player.playerBody.PlayerEntities.Count > 0)
+        if (player.playerBody != null && player.playerBody.physicalPlayerBody != null && 
+            player.playerBody.physicalPlayerBody.PlayerEntities != null && 
+            player.playerBody.physicalPlayerBody.PlayerEntities.Count > 0)
         {
             GM.CurrentSceneSettings.OnPerceiveableSound(__instance.AudioClipSet.Loudness_Primary,
                 __instance.AudioClipSet.Loudness_Primary * soundTravelDistanceMultByEnvironment * globalLoudnessMultiplier,
-                pos, IFF, player.playerBody.PlayerEntities[0]);
+                pos, IFF, player.playerBody.physicalPlayerBody.PlayerEntities[0]);
         }
     }
     // Also notify local player

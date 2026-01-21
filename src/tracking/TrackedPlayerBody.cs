@@ -59,20 +59,21 @@ else
     physicalPlayerBody.SetCollidersEnabled(true);
     
     // ===== ADD THIS SECTION - Create AIEntity for networked players =====
-    // Ensure the player body has an AIEntity component so sosigs can detect and target them
-    if (physicalPlayerBody.Head != null)
+// ===== ADD THIS SECTION - Create AIEntity for networked players =====
+if (physicalPlayerBody.headTransform != null)  // ✅ CORRECT - use headTransform
+{
+    AIEntity headEntity = physicalPlayerBody.headTransform.GetComponent<AIEntity>();  // ✅ CORRECT
+    if (headEntity == null)
     {
-        AIEntity headEntity = physicalPlayerBody.Head.GetComponent<AIEntity>();
-        if (headEntity == null)
-        {
-            headEntity = physicalPlayerBody.Head.gameObject.AddComponent<AIEntity>();
-            headEntity.IFFCode = playerManager.IFF; // Use the player's IFF
-            headEntity.IsAImed = false;
-        }
-        
-        // Force refresh the entities array in physicalPlayerBody
-        physicalPlayerBody.Verify();
+        headEntity = physicalPlayerBody.headTransform.gameObject.AddComponent<AIEntity>();  // ✅ CORRECT
+        headEntity.IFFCode = playerManager.IFF;
+        // Removed IsAImed line - property doesn't exist
     }
+    
+    // Force refresh the entities array
+    physicalPlayerBody.Verify();
+}
+// ===== END OF NEW CODE =====
     // ===== END OF NEW CODE =====
     
     // Note: Canvas visibility being dependent on nameplate mode and CurrentPlayerBody being set, we instead use PlayerManager.SetIFF
