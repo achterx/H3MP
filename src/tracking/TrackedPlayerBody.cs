@@ -46,25 +46,38 @@ namespace H3MP.Tracking
                 }
             }
             else
-            {
-                playerManager = GameManager.players[playerBodyData.controller];
-                playerManager.playerBody = this;
+        {
+    playerManager = GameManager.players[playerBodyData.controller];
+    playerManager.playerBody = this;
+    physicalPlayerBody.headToFollow = playerManager.head;
+    physicalPlayerBody.handsToFollow[0] = playerManager.leftHand;
+    physicalPlayerBody.handsToFollow[1] = playerManager.rightHand;
+    if (physicalPlayerBody.headDisplayMode != PlayerBody.HeadDisplayMode.Physical)
+    {
+        physicalPlayerBody.SetHeadVisible(true);
+    }
+    physicalPlayerBody.SetCollidersEnabled(true);
+    
+    // ===== CREATE AIEntity for networked players BEFORE verifying =====
+    if (physicalPlayerBody.headTransform != null)
+    {
+        AIEntity headEntity = physicalPlayerBody.headTransform.GetComponent<AIEntity>();
+        if (headEntity == null)
+        {
+            headEntity = physicalPlayerBody.headTransform.gameObject.AddComponent<AIEntity>();
+        }
+        headEntity.IFFCode = GM.CurrentSceneSettings.DefaultPlayerIFF;
+    }
+    physicalPlayerBody.Verify();
+    // ===== END =====
+    
+    // Note: Canvas visibility being dependent on nameplate mode and CurrentPlayerBody being set, we instead use PlayerManager.SetIFF
+    //       in our Init call which will also check that
+    // physicalPlayerBody.SetCanvasesEnabled(true);
+    physicalPlayerBody.SetEntitiesRegistered(true);
 
-                physicalPlayerBody.headToFollow = playerManager.head;
-                physicalPlayerBody.handsToFollow[0] = playerManager.leftHand;
-                physicalPlayerBody.handsToFollow[1] = playerManager.rightHand;
-                if (physicalPlayerBody.headDisplayMode != PlayerBody.HeadDisplayMode.Physical)
-                {
-                    physicalPlayerBody.SetHeadVisible(true);
-                }
-                physicalPlayerBody.SetCollidersEnabled(true);
-                // Note: Canvas visibility being dependent on nameplate mode and CurrentPlayerBody being set, we instead use PlayerManager.SetIFF
-                //       in our Init call which will also check that
-                // physicalPlayerBody.SetCanvasesEnabled(true);
-                physicalPlayerBody.SetEntitiesRegistered(true);
-
-                Init();
-            }
+    Init();
+    }
         }
 
         private void Init()
