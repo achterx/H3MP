@@ -45,26 +45,42 @@ namespace H3MP.Tracking
                     physicalPlayerBody.Init();
                 }
             }
-            else
-            {
-                playerManager = GameManager.players[playerBodyData.controller];
-                playerManager.playerBody = this;
-
-                physicalPlayerBody.headToFollow = playerManager.head;
-                physicalPlayerBody.handsToFollow[0] = playerManager.leftHand;
-                physicalPlayerBody.handsToFollow[1] = playerManager.rightHand;
-                if (physicalPlayerBody.headDisplayMode != PlayerBody.HeadDisplayMode.Physical)
-                {
-                    physicalPlayerBody.SetHeadVisible(true);
-                }
-                physicalPlayerBody.SetCollidersEnabled(true);
-                // Note: Canvas visibility being dependent on nameplate mode and CurrentPlayerBody being set, we instead use PlayerManager.SetIFF
-                //       in our Init call which will also check that
-                // physicalPlayerBody.SetCanvasesEnabled(true);
-                physicalPlayerBody.SetEntitiesRegistered(true);
-
-                Init();
-            }
+else
+{
+    playerManager = GameManager.players[playerBodyData.controller];
+    playerManager.playerBody = this;
+    physicalPlayerBody.headToFollow = playerManager.head;
+    physicalPlayerBody.handsToFollow[0] = playerManager.leftHand;
+    physicalPlayerBody.handsToFollow[1] = playerManager.rightHand;
+    if (physicalPlayerBody.headDisplayMode != PlayerBody.HeadDisplayMode.Physical)
+    {
+        physicalPlayerBody.SetHeadVisible(true);
+    }
+    physicalPlayerBody.SetCollidersEnabled(true);
+    
+    // ===== ADD THIS SECTION - Create AIEntity for networked players =====
+    // Ensure the player body has an AIEntity component so sosigs can detect and target them
+    if (physicalPlayerBody.Head != null)
+    {
+        AIEntity headEntity = physicalPlayerBody.Head.GetComponent<AIEntity>();
+        if (headEntity == null)
+        {
+            headEntity = physicalPlayerBody.Head.gameObject.AddComponent<AIEntity>();
+            headEntity.IFFCode = playerManager.IFF; // Use the player's IFF
+            headEntity.IsAImed = false;
+        }
+        
+        // Force refresh the entities array in physicalPlayerBody
+        physicalPlayerBody.Verify();
+    }
+    // ===== END OF NEW CODE =====
+    
+    // Note: Canvas visibility being dependent on nameplate mode and CurrentPlayerBody being set, we instead use PlayerManager.SetIFF
+    //       in our Init call which will also check that
+    // physicalPlayerBody.SetCanvasesEnabled(true);
+    physicalPlayerBody.SetEntitiesRegistered(true);
+    Init();
+}
         }
 
         private void Init()
