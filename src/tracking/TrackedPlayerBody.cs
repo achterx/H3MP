@@ -61,9 +61,11 @@ namespace H3MP.Tracking
                 // Note: Canvas visibility being dependent on nameplate mode and CurrentPlayerBody being set, we instead use PlayerManager.SetIFF
                 //       in our Init call which will also check that
                 // physicalPlayerBody.SetCanvasesEnabled(true);
+                
+                Init();
                 physicalPlayerBody.SetEntitiesRegistered(true);
 
-                Init();
+                
             }
         }
 
