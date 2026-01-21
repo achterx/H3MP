@@ -4188,21 +4188,9 @@ namespace H3MP.Patches
             }
         }
 
-static bool CommandGuardPointPrefix(Sosig __instance)
+static void CommandGuardPointPrefix()
 {
     ++skipSendingOrder;
-    
-    if (Mod.managerObject == null)
-    {
-        return true;
-    }
-    
-    TrackedSosig trackedSosig = GameManager.trackedSosigBySosig.ContainsKey(__instance) ? 
-                                 GameManager.trackedSosigBySosig[__instance] : 
-                                 __instance.GetComponent<TrackedSosig>();
-    
-    // Only let controller execute the command
-    return trackedSosig == null || trackedSosig.data.controller == GameManager.ID;
 }
 
         static void CommandGuardPointPostfix(Sosig __instance, Vector3 point, bool hardguard)
@@ -4249,20 +4237,9 @@ static bool CommandGuardPointPrefix(Sosig __instance)
             }
         }
 
-    static bool CommandAssaultPointPrefix(Sosig __instance)
+static void CommandAssaultPointPrefix()
 {
     ++skipSendingOrder;
-    
-    if (Mod.managerObject == null)
-    {
-        return true;
-    }
-    
-    TrackedSosig trackedSosig = GameManager.trackedSosigBySosig.ContainsKey(__instance) ? 
-                                 GameManager.trackedSosigBySosig[__instance] : 
-                                 __instance.GetComponent<TrackedSosig>();
-    
-    return trackedSosig == null || trackedSosig.data.controller == GameManager.ID;
 }
 
         static void CommandAssaultPointPostfix(Sosig __instance, Vector3 point)
