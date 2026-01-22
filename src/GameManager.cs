@@ -1054,88 +1054,75 @@ namespace H3MP
             }
         }
 
-public static void SyncTrackedObjects(Transform root, bool controlEverything, TrackedObjectData parent)
-{
-    // Return right away if haven't received connect sync yet
-    if (!ThreadManager.host && !Client.singleton.gotConnectSync)
-    {
-        return;
-    }
-
-    if (GetTrackedObjectType(root, out Type trackedObjectType))
-    {
-        // Check if already tracked
-        TrackedObject currentTrackedObject = root.GetComponent<TrackedObject>();
-        if (currentTrackedObject == null)
+        public static void SyncTrackedObjects(Transform root, bool controlEverything, TrackedObjectData parent)
         {
-            // Check if we want to track this on our side, so if we are controlling it
-            if (controlEverything || IsControlled(root, trackedObjectType))
+            // Return right away if haven't received connect sync yet
+            if (!ThreadManager.host && !Client.singleton.gotConnectSync)
             {
-                TrackedObject trackedObject = MakeObjectTracked(root, parent, trackedObjectType);
-                if (trackedObject != null)
+                return;
+            }
+
+            if (GetTrackedObjectType(root, out Type trackedObjectType))
+            {
+                // Check if already tracked
+                TrackedObject currentTrackedObject = root.GetComponent<TrackedObject>();
+                if (currentTrackedObject == null)
                 {
-                    // ===== FIX: Mark scene init objects and prevent double spawning =====
-                    if (inPostSceneLoadTrack)
+                    // Check if we want to track this on our side, so if we are controlling it
+                    if (controlEverything || IsControlled(root, trackedObjectType))
                     {
-                        trackedObject.data.sceneInit = true;
-                        
-                        // If this is a scene init object and we're not first in scene, don't track it
-                        if (!firstPlayerInSceneInstance && !ThreadManager.host)
-                        {
-                            Mod.LogInfo("Skipping scene init object tracking - not first in scene: " + trackedObject.data.typeIdentifier, false);
-                            Destroy(trackedObject);
-                            return;
-                        }
-                    }
-                    // ===== END FIX =====
-                    
-                    if (trackedObject.awoken)
-                    {
-                        if (ThreadManager.host)
-                        {
-                            Mod.LogInfo("Server made new object tracked with type ID: "+trackedObject.data.typeIdentifier,false);
-                            // This will also send a packet with the object to be added in the client's global item list
-                            Server.AddTrackedObject(trackedObject.data, 0);
-                        }
-                        else
-                        {
-                            // Tell the server we need to add this item to global tracked objects
-                            trackedObject.data.localWaitingIndex = Client.localObjectCounter++;
-                            Mod.LogInfo("Client made new object tracked with local waiting index: " + trackedObject.data.localWaitingIndex+ " and type ID: "+trackedObject.data.typeIdentifier, false);
-                            Client.waitingLocalObjects.Add(trackedObject.data.localWaitingIndex, trackedObject.data);
-                            ClientSend.TrackedObject(trackedObject.data);
-                        }
+                        TrackedObject trackedObject = MakeObjectTracked(root, parent, trackedObjectType);
+                        if (trackedObject != null)
 
-                        trackedObject.data.OnTracked();
-                    }
-                    else
-                    {
-                        trackedObject.sendOnAwake = true;
-                    }
 
-                    foreach (Transform child in root)
-                    {
-                        SyncTrackedObjects(child, controlEverything, trackedObject.data);
+                        {
+                            if (trackedObject.awoken)
+                            {
+                                if (ThreadManager.host)
+                                {
+                                    Mod.LogInfo("Server made new object tracked with type ID: "+trackedObject.data.typeIdentifier,false);
+                                    // This will also send a packet with the object to be added in the client's global item list
+                                    Server.AddTrackedObject(trackedObject.data, 0);
+                                }
+                                else
+                                {
+                                    // Tell the server we need to add this item to global tracked objects
+                                    trackedObject.data.localWaitingIndex = Client.localObjectCounter++;
+                                    Mod.LogInfo("Client made new object tracked with local waiting index: " + trackedObject.data.localWaitingIndex+ " and type ID: "+trackedObject.data.typeIdentifier, false);
+                                    Client.waitingLocalObjects.Add(trackedObject.data.localWaitingIndex, trackedObject.data);
+                                    ClientSend.TrackedObject(trackedObject.data);
+                                }
+
+                                trackedObject.data.OnTracked();
+                            }
+                            else
+                            {
+                                trackedObject.sendOnAwake = true;
+                            }
+
+                            foreach (Transform child in root)
+                            {
+                                SyncTrackedObjects(child, controlEverything, trackedObject.data);
+                            }
+                        }
+                    }
+                    else if(TrackSkipped(root, trackedObjectType))
+                    { 
+                        // Item will not be controlled by us but is an item that should be tracked by system, so destroy it
+                        Destroy(root.gameObject);
                     }
                 }
+                else if (parent != null) // Already tracked but a parent was passed, add to parent's children list
+                {
+                    parent.children.Add(currentTrackedObject.data);
+                }
             }
-            else if(TrackSkipped(root, trackedObjectType))
-            { 
-                // Item will not be controlled by us but is an item that should be tracked by system, so destroy it
-                Destroy(root.gameObject);
-            }
-        }
-        else if (parent != null) // Already tracked but a parent was passed, add to parent's children list
-        {
-            parent.children.Add(currentTrackedObject.data);
-        }
-    }
-    else
-    {
-        foreach (Transform child in root)
-        {
-            SyncTrackedObjects(child, controlEverything, parent);
-        }
+            else
+            {
+                foreach (Transform child in root)
+                {
+                    SyncTrackedObjects(child, controlEverything, parent);
+                }
     }
 }
 
