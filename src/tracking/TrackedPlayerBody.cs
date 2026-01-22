@@ -64,7 +64,7 @@ namespace H3MP.Tracking
                 
                 Init();
                 
-               physicalPlayerBody.SetEntitiesRegistered(true);
+            
                 
             }
         }
@@ -91,6 +91,10 @@ namespace H3MP.Tracking
                     
                 }
             }
+            if (physicalPlayerBody != null)
+    {
+        physicalPlayerBody.SetEntitiesRegistered(true);
+    }
         }
 
         public void UpdateHealthLabel()
